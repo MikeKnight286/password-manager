@@ -1,0 +1,42 @@
+# Ignore build directories
+/build
+/bin
+/obj
+
+# Ignore object files
+*.o
+*.obj
+
+# Ignore executable files
+*.exe
+*.out
+*.app
+
+# Ignore dependency files
+*.d
+
+# Ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# Ignore user-specific files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.code-workspace
+
+# Ignore system files
+*.bak
+*.tmp
+*.old
+*.orig
+
+# Ignore Makefile outputs
+Makefile~
