@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -Iinclude -I/mingw64/include
-LDFLAGS = -L/mingw64/lib -lpng -ljpeg -lz
+LDFLAGS = -L/mingw64/lib -lpng -ljpeg -lz -lSDL2 -lSDL2_image
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
 TARGET = password_manager

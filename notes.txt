@@ -1,0 +1,30 @@
+C Notes
+
+fflush to immediately display the contents of an output stream instead of buffering them and then writing it to an stdout or file (for immediate feedback)
+printf and fprinf - former stdout, latter to a file or named output stream
+* is pointer, & is address of * (e.g. *ptr = &a, menaing ptr now holds address of a) 
+r w a for read, write and append, b to everything for binary
+r+ read when file exists, w+ read and write, create file when file does not exist, if exist, truncate (delete) the contents, a+ read and append, same with w+ but at the end of the file
+%s - string, %d - int, %f - float (%1.f -> up to 1 decimal), %c - char, $lf - double (up to 15 decimals)
+
+libpng 
+png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
+png_infop - pointer to metadata of PNG file such as width, height, color type etc. also info about various chunks of information
+png_create_read_struct(png lib version, error ptr, error handler, warn handler)
+setjmp - when lib faces error, it wants to longjmp back to the routine, setjmp to save the current env for longjmp to use (need to use png ptr which is png_jmpbuf)
+
+libjpeg
+jpeg_decompress_struct - like png_struct, cinfo - instance of struct
+jpeg_error_mgr - error handler struct, contains pointer, jerr is an instance of that struct 
+cinfo.err is field of cinfo (address of jerr in assigned to this)
+jpeg_create_decompress initializes the jpeg decompression object
+jpeg_stdio_src makes decompression object read from file(&cinfo for struct, fp for file)
+jpeg_read_header reads the header of JPEG which has basic info like width, height, color,
+JSAMPLE - represents a single sample or pixel value,normally char
+JSAMPROW - ptr to a row of samples, single scanline 
+JSAMPARRAY - ptr to an array of rows, a 2D array where each element is a scanline 
+alloc_sarray -memory management structure to allocated a 2D array of samples
+j_common_ptr - generic pointer type for both compression and decompression
+JPOOL_IMAGE - memory pool for allocation, will be freed when the decompression object is destroyed
+
+SDL for Rendering Image
