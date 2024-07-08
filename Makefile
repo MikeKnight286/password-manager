@@ -1,8 +1,8 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Iinclude -I/mingw64/include
-LDFLAGS = -L/mingw64/lib -lpng -ljpeg -lz -lSDL2 -lSDL2_image
+CFLAGS = -Iinclude -I/mingw64/include -I/mingw64/include/SDL2 -I/mingw64/include/sodium
+LDFLAGS = -L/mingw64/lib -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)
 TARGET = password_manager

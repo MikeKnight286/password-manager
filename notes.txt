@@ -6,6 +6,7 @@ printf and fprinf - former stdout, latter to a file or named output stream
 r w a for read, write and append, b to everything for binary
 r+ read when file exists, w+ read and write, create file when file does not exist, if exist, truncate (delete) the contents, a+ read and append, same with w+ but at the end of the file
 %s - string, %d - int, %f - float (%1.f -> up to 1 decimal), %c - char, $lf - double (up to 15 decimals)
+For quotation marks: use escape sequence \ (\"string\" would be "string")
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -28,3 +29,16 @@ j_common_ptr - generic pointer type for both compression and decompression
 JPOOL_IMAGE - memory pool for allocation, will be freed when the decompression object is destroyed
 
 SDL for Rendering Image
+SDL_INIT_VIDEO - To initiate SDL and Video (Image)
+SDL_CreateWindow(const char *title, pos x of window, pos y of window, width, height, flags like SDL_WINDOW_FULLSCREEEN, shown, hidden, resizable)
+SDL_Renderer(window instance/ptr to struct, index (if -1 is passed, choose the first driver that supports the flags), SDL_RENDERER_ACCELERATED for hardware acceleration, software for software fallback, presentvsync, targettexture)
+SDL_Surface stores the raw pixel data and bit info of image file
+SDL_CreateTextureFromSurface creates texture from stored raw pixel surface data
+SDL_Event to hold events of SDL instance
+
+Libsodium for Argon2
+Common context in libsodium :  0 on success, -1 on failure and 1 if already started
+sodium_init to initalize the lib, have context
+crypto_pwhash_STRBYTES - 128, for storing the complete hashed password string with metadata, for storage and verification, /// there are also BYTES for when only raw hash output is needed, SALTBYTES for defining salt size to ensure unique hashes
+crypto_pwhash_OPSLIMIT_* for time cost, MEMLIMIT_* for memory cost, can be choosen between INTERACTIVE, MODERATE, and SENSITIVE (low to high)
+crypto_pwhash_str(output_hash, input_string, strlen(input), time cost, memory cost), have context
