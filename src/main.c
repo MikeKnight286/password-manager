@@ -2,6 +2,7 @@
 #include <jpeglib.h>
 #include <stdio.h>
 #include "utils.h"
+#include "profiles.h"
 
 int main() {
     printf("Starting program...\n");
