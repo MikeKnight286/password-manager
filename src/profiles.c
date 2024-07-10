@@ -3,9 +3,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "profiles.h"
+#include "utils.h"
 
 /* PROFILE MANAGEMENT */
 void create_profile(Profile *profile, int id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
+    // Error handling 
+    if(!isValidEmail(email)){
+        printf("Invalid email address: %s\n", email);
+        return;
+    }
     
 }
 

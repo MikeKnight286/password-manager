@@ -8,6 +8,9 @@ r+ read when file exists, w+ read and write, create file when file does not exis
 %s - string, %d - int, %f - float (%1.f -> up to 1 decimal), %c - char, $lf - double (up to 15 decimals)
 For quotation marks: use escape sequence \ (\"string\" would be "string")
 struct to create a structure, typedef to give alias to this structure (for e.g struct student {vars}; -> each time when we call this struct, it would be struct student s1; // with typedef sturct student {vars} Student; -> Student s1)
+const before datatype ensures that no changes happen to input in function, still allows both const and non-const arguments in funcs
+\r is Carrigae return char
+strchr(given string, search char in string) 
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process

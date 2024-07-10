@@ -26,6 +26,8 @@
 *~
 .DS_Store
 Thumbs.db
+test.jpg
+test.png
 
 # Ignore IDE and editor-specific files
 .vscode/

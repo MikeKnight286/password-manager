@@ -5,13 +5,8 @@
 #include "profiles.h"
 
 int main() {
-    printf("Starting program...\n");
-    fflush(stdout);
-
-    printf("Ending program...\n");
-    fflush(stdout);
-
-    utils();
+    
+    Profile user;
 
     return 0;
 }
