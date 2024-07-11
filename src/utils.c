@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sodium.h>
+#include "zxcvbn-c/zxcvbn.h"
 #include "utils.h"
 
 // Check if string contains invalid chars
@@ -29,6 +30,67 @@ bool isValidEmail(const char *email) {
     }
 
     return true;
+}
+
+// Checks if master password is strong enough
+bool isStrongPassword(const char *password){
+    ZxcMatch_t *matches = NULL;
+    double entropy = ZxcvbnMatch(password, NULL, &matches);
+    bool is_strong = true;
+
+    // Feedback based on entropy thresholds 
+    const double entropy_threshold_weak = 28;
+    const double entropy_threshold_medium = 35;
+    const double entropy_threshold_strong = 50;
+
+    if (entropy < entropy_threshold_weak){
+        printf("Password is weak.\n");
+        is_strong = false;
+    } else if (entropy < entropy_threshold_medium){
+        printf("Password is medium strength.\n");
+        is_strong = false;
+    } else if (entropy < entropy_threshold_strong){
+        printf("Password is almost strong.\n");
+        is_strong = false;
+    } else {
+        printf("Password is strong.\n");
+    }
+
+    // Feedback based on matches and characteristics
+    bool has_uppercase = false, has_lowercase = false, has_digit = false, has_special = false; 
+    int length = strlen(password);
+    for (int i=0; i<length; i++){
+        if(password[i] >= 'A' && password[i] <= 'Z') has_uppercase = true;
+        else if(password[i] >= 'a' && password[i] <= 'z') has_lowercase = true;
+        else if (password[i] >= '0' && password[i] <= '9') has_digit = true;
+        else has_special = true;
+    }
+
+    if(!has_uppercase){
+        printf("Please add at least one uppercase letter.\n");
+        is_strong = false;
+    }
+    if(!has_lowercase){
+        printf("Please add at least one lowercase letter.\n");
+        is_strong = false;
+    }
+    if(!has_digit){
+        printf("Please add at least one number.\n");
+        is_strong = false; 
+    }
+    if(!has_special){
+        printf("Please add at least one special character (e.g., !@#$^&*%%).\n");
+        is_strong = false; 
+    }
+    if (length < 12){
+        printf("Your password is too short. Make it at least 12 characters long.\n");
+    }
+
+    // Feedback based on common passwords or patterns
+    ZxcMatch_t *match = matches;
+    while(match !=NULL){
+        
+    }
 }
 
 // Hashes strings with Argon2
