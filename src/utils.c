@@ -2,8 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sodium.h>
-#include "zxcvbn-c/zxcvbn.h"
+#include <math.h>
+#include "zxcvbn.h"
 #include "utils.h"
+
+#define SINGLE_GUESS 0.001
+#define NUM_ATTACKERS 1000
+#define SECONDS_PER_GUESS (SINGLE_GUESS / NUM_ATTACKERS)
 
 // Check if string contains invalid chars
 bool contains_invalid_chars(const char *str,const char *invalid_chars_email){
@@ -32,76 +37,135 @@ bool isValidEmail(const char *email) {
     return true;
 }
 
-// Checks if master password is strong enough
-bool isStrongPassword(const char *password){
+// Check password's strength
+
+double entropy_to_crack_time(double entropy) {
+    return (0.5 * pow(2, entropy)) * SECONDS_PER_GUESS;
+}
+
+const char *display_crack_time(double seconds) {
+    static char buffer[50]; // buffer to hold the crack time string
+    if (seconds < 60) {
+        snprintf(buffer, sizeof(buffer), "instant");
+    } else if (seconds < 3600) {
+        snprintf(buffer, sizeof(buffer), "%.0f minutes", ceil(seconds / 60));
+    } else if (seconds < 86400) {
+        snprintf(buffer, sizeof(buffer), "%.0f hours", ceil(seconds / 3600));
+    } else if (seconds < 2678400) {
+        snprintf(buffer, sizeof(buffer), "%.0f days", ceil(seconds / 86400));
+    } else if (seconds < 32140800) {
+        snprintf(buffer, sizeof(buffer), "%.0f months", ceil(seconds / 2678400));
+    } else if (seconds < 3214080000) {
+        snprintf(buffer, sizeof(buffer), "%.0f years", ceil(seconds / 32140800));
+    } else {
+        snprintf(buffer, sizeof(buffer), "centuries");
+    }
+    return buffer;
+}
+
+bool isStrongPassword(const char *password) {
     ZxcMatch_t *matches = NULL;
     double entropy = ZxcvbnMatch(password, NULL, &matches);
+    double crack_time = entropy_to_crack_time(entropy);
+    const char *crack_time_display = display_crack_time(crack_time);
     bool is_strong = true;
+    bool has_feedback = false;
+    bool dictionary_feedback_given = false;
+    bool pattern_feedback_given = false;
 
-    // Feedback based on entropy thresholds 
+    // Feedback based on entropy thresholds
     const double entropy_threshold_weak = 28;
     const double entropy_threshold_medium = 35;
     const double entropy_threshold_strong = 50;
 
-    if (entropy < entropy_threshold_weak){
-        printf("Password is weak.\n");
+    if (entropy < entropy_threshold_weak) {
         is_strong = false;
-    } else if (entropy < entropy_threshold_medium){
-        printf("Password is medium strength.\n");
+        has_feedback = true;
+    } else if (entropy < entropy_threshold_medium) {
         is_strong = false;
-    } else if (entropy < entropy_threshold_strong){
-        printf("Password is almost strong.\n");
+        has_feedback = true;
+    } else if (entropy < entropy_threshold_strong) {
         is_strong = false;
-    } else {
-        printf("Password is strong.\n");
+        has_feedback = true;
     }
 
     // Feedback based on matches and characteristics
     bool has_uppercase = false, has_lowercase = false, has_digit = false, has_special = false; 
     int length = strlen(password);
-    for (int i=0; i<length; i++){
-        if(password[i] >= 'A' && password[i] <= 'Z') has_uppercase = true;
-        else if(password[i] >= 'a' && password[i] <= 'z') has_lowercase = true;
+    for (int i = 0; i < length; i++) {
+        if (password[i] >= 'A' && password[i] <= 'Z') has_uppercase = true;
+        else if (password[i] >= 'a' && password[i] <= 'z') has_lowercase = true;
         else if (password[i] >= '0' && password[i] <= '9') has_digit = true;
-        else has_special = true;
+        else if (strchr("!@#$%^&*()", password[i])) has_special = true;
     }
 
-    if(!has_uppercase){
-        printf("Please add at least one uppercase letter.\n");
+    if (!has_uppercase || !has_lowercase || !has_digit || !has_special || length < 12) {
         is_strong = false;
-    }
-    if(!has_lowercase){
-        printf("Please add at least one lowercase letter.\n");
-        is_strong = false;
-    }
-    if(!has_digit){
-        printf("Please add at least one number.\n");
-        is_strong = false; 
-    }
-    if(!has_special){
-        printf("Please add at least one special character (e.g., !@#$^&*%%).\n");
-        is_strong = false; 
-    }
-    if (length < 12){
-        printf("Your password is too short. Make it at least 12 characters long.\n");
+        has_feedback = true;
     }
 
     // Feedback based on common passwords or patterns
     ZxcMatch_t *match = matches;
-    while(match !=NULL){
-        
+    while (match != NULL) {
+        if (!dictionary_feedback_given && (match->Type == DICTIONARY_MATCH || match->Type == DICT_LEET_MATCH)) {
+            printf("Password contains dictionary words or common patterns. Consider making it less predictable.\n");
+            is_strong = false;
+            has_feedback = true;
+            dictionary_feedback_given = true;
+        }
+        if (!pattern_feedback_given && (match->Type == REPEATS_MATCH || match->Type == SEQUENCE_MATCH || match->Type == SPATIAL_MATCH)) {
+            printf("Password contains repeated patterns or sequences. Consider using more varied characters.\n");
+            is_strong = false;
+            has_feedback = true;
+            pattern_feedback_given = true;
+        }
+        match = match->Next;
     }
+
+    // Print detailed feedback for the password
+    if (has_feedback) {
+        printf("Estimated crack time: %s\n", crack_time_display);
+        if (entropy < entropy_threshold_weak) {
+            printf("Password is weak.\n");
+        } else if (entropy < entropy_threshold_medium) {
+            printf("Password is medium strength.\n");
+        } else if (entropy < entropy_threshold_strong) {
+            printf("Password is almost strong.\n");
+        }
+
+        if (!has_uppercase) {
+            printf("Please add at least one uppercase letter.\n");
+        }
+        if (!has_lowercase) {
+            printf("Please add at least one lowercase letter.\n");
+        }
+        if (!has_digit) {
+            printf("Please add at least one number.\n");
+        }
+        if (!has_special) {
+            printf("Please add at least one special character (e.g., !@#$%^&*).\n");
+        }
+        if (length < 12) {
+            printf("Your password is too short. Make it at least 12 characters long.\n");
+        }
+    }
+
+    // Free the match info
+    ZxcvbnFreeInfo(matches);
+
+    return is_strong;
 }
 
+
 // Hashes strings with Argon2
-void string_to_argon2hash(const char *input_string){
+void string_to_argon2hash(const char *input_string, char *hashed_string){
     if (sodium_init() < 0){
         fprintf(stderr, "Failed to initialize libsodium\n");
         return;
     }
 
-    char hashed_string[crypto_pwhash_STRBYTES];
-
+    hashed_string[crypto_pwhash_STRBYTES];
+    
     if(crypto_pwhash_str(
             hashed_string,
             input_string,
@@ -115,13 +179,13 @@ void string_to_argon2hash(const char *input_string){
 }
 
 // Verify password with hash
-void verify_argon2hash(const char *input_string, const char *hashed_string){
+bool verify_argon2hash(const char *input_string, const char *hashed_string){
     if (sodium_init() <0){
         fprintf(stderr, "Failed to initialize libsodium\n");
-        return;
+        return false;
     }
 
-    if (crypto_pwhash_str_verify(input_string, hashed_string, strlen(input_string)) == 0){
+    if (crypto_pwhash_str_verify(hashed_string, input_string, strlen(input_string)) == 0){
         return true;
     }
 

@@ -10,7 +10,8 @@ For quotation marks: use escape sequence \ (\"string\" would be "string")
 struct to create a structure, typedef to give alias to this structure (for e.g struct student {vars}; -> each time when we call this struct, it would be struct student s1; // with typedef sturct student {vars} Student; -> Student s1)
 const before datatype ensures that no changes happen to input in function, still allows both const and non-const arguments in funcs
 \r is Carrigae return char
-strchr(given string, search char in string) 
+strchr(given string, search char in string): can also be used like strchr(specified char, next to find char) to find the next char after the specified char in the string
+
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process

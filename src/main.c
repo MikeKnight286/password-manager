@@ -5,8 +5,7 @@
 #include "profiles.h"
 
 int main() {
-    
-    Profile user;
-
+    fprintf(stdout, "Start");
+    fflush(stdout);
     return 0;
 }
