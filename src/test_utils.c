@@ -41,18 +41,18 @@ void test_isValidEmail(){
 
 void test_isStrongPassword(){
     const char *strong_passwords[] = {
-        "S3cur3P@ssword!",
-        "V3ryStr0ngP@ssw0rd!",
+        "ThatBrutalXXNinja280901",
+        "AmberTreePunchesCars00#4",
         "superDuperdumpsterhe11a!",
-        "My$trongPassword12",
-        "P@sswordWithNumbers123"
+        "CrimsonDuckSaysComputer0$57",
+        "AzureSharkCleans*otel0943"
     };
     const char *weak_passwords[] = {
         "password",
         "123456",
         "abc",
         "mypassword",
-        "simplepass"
+        "2444666668888888999999999"
     };
 
     printf("Testing strong passwords...\n");
@@ -82,7 +82,6 @@ void test_argon2hash(){
     const char *password = "My$3cureP@ssword";
     char hashed_password[crypto_pwhash_STRBYTES];
 
-    printf("Testing Argon2 hash function...\n");
     string_to_argon2hash(password, hashed_password);
     printf("Hashed password: %s\n", hashed_password);
 

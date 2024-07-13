@@ -12,6 +12,10 @@ void create_profile(Profile *profile, int id, const char *name, const char *emai
         printf("Invalid email address: %s\n", email);
         return;
     }
+    if(!isStrongPassword(master_password)){
+        printf("Master password ""%s"" not strong enough.\n", master_password);
+        return;
+    }
     
 }
 

@@ -10,8 +10,10 @@ For quotation marks: use escape sequence \ (\"string\" would be "string")
 struct to create a structure, typedef to give alias to this structure (for e.g struct student {vars}; -> each time when we call this struct, it would be struct student s1; // with typedef sturct student {vars} Student; -> Student s1)
 const before datatype ensures that no changes happen to input in function, still allows both const and non-const arguments in funcs
 \r is Carrigae return char
-strchr(given string, search char in string): can also be used like strchr(specified char, next to find char) to find the next char after the specified char in the string
-
+strchr(given string, search char in string): can also be used like strchr(specified char, next to find char) to find the next char after the specified char in the string, also do (ptr+1, char) for char after ptr
+static inside a function : retains the values until the program ends, retains in successive calls to funcs : for e.g. if static char buffer[50] = "Initial"; snprintf(buffer, sizeof(buffer), "Modify"), when the func is called first time, it will give Initial and Modify when called second time 
+static outside a function will be limited to the file it exists
+snprintf to format and store a series of chars into buffer, allows to specify max num of chars, snprintf(char *str, sizeof(str), format,..), if buffer size is small, data will be truncated
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -47,3 +49,9 @@ sodium_init to initalize the lib, have context
 crypto_pwhash_STRBYTES - 128, for storing the complete hashed password string with metadata, for storage and verification, /// there are also BYTES for when only raw hash output is needed, SALTBYTES for defining salt size to ensure unique hashes
 crypto_pwhash_OPSLIMIT_* for time cost, MEMLIMIT_* for memory cost, can be choosen between INTERACTIVE, MODERATE, and SENSITIVE (low to high)
 crypto_pwhash_str(output_hash, input_string, strlen(input), time cost, memory cost), have context
+crypto_pwhash_str_verify(hashed_string, input_password, strlen(input_string)) to verify the hash. Has common context
+
+zxcvbn library for password strength checker
+ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltEnpy multipart password, Type matching types like dict match, struct ZxcMatch *Next)
+ZxcvbnMatch : main password matching func (password, user defined dict, info on matches)
+ZxcvbnFreeInfo : matches data should be freed after func is done

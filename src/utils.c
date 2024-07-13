@@ -6,12 +6,12 @@
 #include "zxcvbn.h"
 #include "utils.h"
 
-#define SINGLE_GUESS 0.001
+#define SINGLE_GUESS 0.010
 #define NUM_ATTACKERS 1000
 #define SECONDS_PER_GUESS (SINGLE_GUESS / NUM_ATTACKERS)
 
 // Check if string contains invalid chars
-bool contains_invalid_chars(const char *str,const char *invalid_chars_email){
+bool contains_invalid_chars(const char *str, const char *invalid_chars_email){
     while (*str){
         if(strchr(invalid_chars_email, *str)){
             return true;
@@ -74,18 +74,25 @@ bool isStrongPassword(const char *password) {
     bool pattern_feedback_given = false;
 
     // Feedback based on entropy thresholds
-    const double entropy_threshold_weak = 28;
-    const double entropy_threshold_medium = 35;
-    const double entropy_threshold_strong = 50;
+    const double entropy_threshold_poor = 28;
+    const double entropy_threshold_weak = 35;
+    const double entropy_threshold_medium = 60; // this password is good enough I guess
+    const double entropy_threshold_strong = 127;
 
-    if (entropy < entropy_threshold_weak) {
+    if (entropy < entropy_threshold_poor) {
+        is_strong = false;
+        has_feedback = true;
+    } else if (entropy < entropy_threshold_weak) {
         is_strong = false;
         has_feedback = true;
     } else if (entropy < entropy_threshold_medium) {
-        is_strong = false;
+        is_strong = true;
         has_feedback = true;
     } else if (entropy < entropy_threshold_strong) {
-        is_strong = false;
+        is_strong = true;
+        has_feedback = true;
+    } else {
+        is_strong = true;
         has_feedback = true;
     }
 
@@ -96,7 +103,7 @@ bool isStrongPassword(const char *password) {
         if (password[i] >= 'A' && password[i] <= 'Z') has_uppercase = true;
         else if (password[i] >= 'a' && password[i] <= 'z') has_lowercase = true;
         else if (password[i] >= '0' && password[i] <= '9') has_digit = true;
-        else if (strchr("!@#$%^&*()", password[i])) has_special = true;
+        else if (strchr("!@#$%%^&*()", password[i])) has_special = true;
     }
 
     if (!has_uppercase || !has_lowercase || !has_digit || !has_special || length < 12) {
@@ -109,13 +116,11 @@ bool isStrongPassword(const char *password) {
     while (match != NULL) {
         if (!dictionary_feedback_given && (match->Type == DICTIONARY_MATCH || match->Type == DICT_LEET_MATCH)) {
             printf("Password contains dictionary words or common patterns. Consider making it less predictable.\n");
-            is_strong = false;
             has_feedback = true;
             dictionary_feedback_given = true;
         }
         if (!pattern_feedback_given && (match->Type == REPEATS_MATCH || match->Type == SEQUENCE_MATCH || match->Type == SPATIAL_MATCH)) {
             printf("Password contains repeated patterns or sequences. Consider using more varied characters.\n");
-            is_strong = false;
             has_feedback = true;
             pattern_feedback_given = true;
         }
@@ -125,12 +130,16 @@ bool isStrongPassword(const char *password) {
     // Print detailed feedback for the password
     if (has_feedback) {
         printf("Estimated crack time: %s\n", crack_time_display);
-        if (entropy < entropy_threshold_weak) {
-            printf("Password is weak.\n");
+        if (entropy < entropy_threshold_poor) {
+            printf("Poor password.\n");
+        } else if (entropy < entropy_threshold_weak) {
+            printf("Still a weak password.\n");
         } else if (entropy < entropy_threshold_medium) {
-            printf("Password is medium strength.\n");
+            printf("Reasonable for a password. Could be a bit better.\n");
         } else if (entropy < entropy_threshold_strong) {
-            printf("Password is almost strong.\n");
+            printf("Good password.\n");
+        } else {
+            printf("Excellent password.\n");
         }
 
         if (!has_uppercase) {
@@ -155,7 +164,6 @@ bool isStrongPassword(const char *password) {
 
     return is_strong;
 }
-
 
 // Hashes strings with Argon2
 void string_to_argon2hash(const char *input_string, char *hashed_string){
