@@ -36,7 +36,7 @@ void delete_profile(Profile *profile){
 /* PASSWORD AND MASTER IMAGE MANAGEMENT */
 void forgot_master_password(Profile *profile){
 
-}
+}   
 
 void update_master_password(Profile *profile, const char *new_master_password){
 

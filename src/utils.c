@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdbool.h>
 #include <sodium.h>
 #include <math.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "zxcvbn.h"
 #include "utils.h"
 
@@ -152,7 +155,7 @@ bool isStrongPassword(const char *password) {
             printf("Please add at least one number.\n");
         }
         if (!has_special) {
-            printf("Please add at least one special character (e.g., !@#$%^&*).\n");
+            printf("Please add at least one special character (e.g., !@#$%%^&*).\n");
         }
         if (length < 12) {
             printf("Your password is too short. Make it at least 12 characters long.\n");
@@ -199,3 +202,87 @@ bool verify_argon2hash(const char *input_string, const char *hashed_string){
 
     return false;
 }
+
+// Convert JPEG to PNG for lossless compression 
+bool convertJPEGtoPNG(const char *jpeg_path, const char *png_path){
+    // Initialize SDL2_image for JPG and PNG 
+    if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0){
+        fprintf(stderr, "Failed to initialize SDL2_image: %s\n", IMG_GetError());
+    }
+    
+    // Load the JPEG image for debugging
+    SDL_Surface *image = IMG_Load(jpeg_path);
+    if(image == NULL){
+        fprintf(stderr, "Failed to load JPEG image: %s\n", IMG_GetError());
+        IMG_Quit();
+        return false;
+    }
+
+    // Save the image as PNG
+    if (IMG_SavePNG(image, png_path) != 0){
+        fprintf(stderr, "Failed to save image as PNG: %s\n", IMG_GetError());
+        SDL_FreeSurface(image);
+        IMG_Quit();
+        return false;
+    }
+
+    SDL_FreeSurface(image);
+    IMG_Quit();
+
+    return true;
+}
+
+
+// Check if the uploaded image file has correct extension
+bool hasValidImageExtension(const char *image_path){
+    const char *valid_extensions[] = {".png", ".tiff", ".tif", ".jpg", ".jpeg"};
+    const int num_valid_extensions = sizeof(valid_extensions) / sizeof(valid_extensions[0]);
+
+    const char *dot = strrchr(image_path, '.');
+    if(!dot || dot == image_path) return false;
+
+    for (int i=0; i<num_valid_extensions; i++){
+        if(strcasecmp(dot, valid_extensions[i]) == 0){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// Check if the upload file is an image
+bool isValidImage(const char *image_path){
+    if(!hasValidImageExtension){
+        return false;
+    }
+
+    const char *dot = strchr(image_path, '.');
+    if(strcasecmp(dot, ".jpg") == 0 || strcasecmp(dot, ".jpeg") == 0){
+        char png_path[256];
+        strncpy(png_path, image_path, strlen(image_path) - strlen(dot));
+        strncat(png_path, ".png", 5);
+
+        if (!convertJPEGtoPNG(image_path, png_path)) {
+            return false;
+        }
+
+        image_path = png_path;
+    }
+
+    if(IMG_Init(IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_JPG ) == 0){
+        fprintf(stderr, "Failed to initialize SDL2_image: %s\n", IMG_GetError());
+        return false;
+    }
+
+    SDL_Surface *image = IMG_Load(image_path);
+    if(image == NULL){
+        IMG_Quit();
+        return false;
+    }
+
+    SDL_FreeSurface(image);
+    IMG_Quit();
+
+    return true;
+}
+

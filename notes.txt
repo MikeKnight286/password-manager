@@ -53,5 +53,5 @@ crypto_pwhash_str_verify(hashed_string, input_password, strlen(input_string)) to
 
 zxcvbn library for password strength checker
 ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltEnpy multipart password, Type matching types like dict match, struct ZxcMatch *Next)
-ZxcvbnMatch : main password matching func (password, user defined dict, info on matches)
+ZxcvbnMatch : main password matching func (password, user defined dict, info on matches), return the entropy in bits
 ZxcvbnFreeInfo : matches data should be freed after func is done
