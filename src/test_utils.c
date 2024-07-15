@@ -92,3 +92,14 @@ void test_argon2hash(){
         printf("Verification failed.\n");
     }
 }
+
+void test_isValidImage(const char *image_path){
+    char output_path[256];
+
+    printf("Testing isValidImage function...\n");
+    if(isValidImage(image_path, output_path)){
+        printf("The file '%s' is a valid image. Output path: '%s'\n", image_path, output_path);
+    } else {
+        printf("The file '%s' is not a valid image.\n", image_path);
+    }
+}

@@ -14,6 +14,10 @@ strchr(given string, search char in string): can also be used like strchr(specif
 static inside a function : retains the values until the program ends, retains in successive calls to funcs : for e.g. if static char buffer[50] = "Initial"; snprintf(buffer, sizeof(buffer), "Modify"), when the func is called first time, it will give Initial and Modify when called second time 
 static outside a function will be limited to the file it exists
 snprintf to format and store a series of chars into buffer, allows to specify max num of chars, snprintf(char *str, sizeof(str), format,..), if buffer size is small, data will be truncated
+fprintf to display output at specified stream in a format (stderr, "format") to output as stderr
+strncpy (target destination to be copied, source string to be copied, no of chars to copy from source)
+strcasecmp(s1 ptr, s2 ptr) - to compare s1 and s2 ignoring cases, strncasecmp with no of chars from s1 to s2
+strncatstrncpy (target destination to be added, source string to be added, no of chars to add from source)
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -42,6 +46,10 @@ SDL_Renderer(window instance/ptr to struct, index (if -1 is passed, choose the f
 SDL_Surface stores the raw pixel data and bit info of image file
 SDL_CreateTextureFromSurface creates texture from stored raw pixel surface data
 SDL_Event to hold events of SDL instance
+SDL_GetError() to show stderr with fprintf
+SDL_FreeSurface - free the surface after using it
+IMG_Init(Img flags) like IMG_INIT_JPG | IMG_INIT_PNG to initialize the image
+IMG_SavePNG : Save the SDL surface as PNG file
 
 Libsodium for Argon2
 Common context in libsodium :  0 on success, -1 on failure and 1 if already started

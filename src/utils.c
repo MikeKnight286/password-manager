@@ -61,7 +61,7 @@ const char *display_crack_time(double seconds) {
     } else if (seconds < 3214080000) {
         snprintf(buffer, sizeof(buffer), "%.0f years", ceil(seconds / 32140800));
     } else {
-        snprintf(buffer, sizeof(buffer), "centuries");
+         (buffer, sizeof(buffer), "centuries");
     }
     return buffer;
 }
@@ -251,22 +251,18 @@ bool hasValidImageExtension(const char *image_path){
 
 
 // Check if the upload file is an image
-bool isValidImage(const char *image_path){
-    if(!hasValidImageExtension){
+bool isValidImage(const char *image_path, char *output_path){
+    if(!hasValidImageExtension(image_path)){
         return false;
     }
 
-    const char *dot = strchr(image_path, '.');
+    strcpy(output_path, image_path);
+    const char *dot = strchr(output_path, '.');
     if(strcasecmp(dot, ".jpg") == 0 || strcasecmp(dot, ".jpeg") == 0){
-        char png_path[256];
-        strncpy(png_path, image_path, strlen(image_path) - strlen(dot));
-        strncat(png_path, ".png", 5);
-
-        if (!convertJPEGtoPNG(image_path, png_path)) {
+        snprintf(output_path, 256, "%.*s.png", (int)(dot - output_path), output_path);
+        if(!convertJPEGtoPNG(image_path, output_path)){
             return false;
         }
-
-        image_path = png_path;
     }
 
     if(IMG_Init(IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_JPG ) == 0){
@@ -274,7 +270,7 @@ bool isValidImage(const char *image_path){
         return false;
     }
 
-    SDL_Surface *image = IMG_Load(image_path);
+    SDL_Surface *image = IMG_Load(output_path);
     if(image == NULL){
         IMG_Quit();
         return false;
