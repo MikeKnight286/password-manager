@@ -17,7 +17,7 @@ snprintf to format and store a series of chars into buffer, allows to specify ma
 fprintf to display output at specified stream in a format (stderr, "format") to output as stderr
 strncpy (target destination to be copied, source string to be copied, no of chars to copy from source)
 strcasecmp(s1 ptr, s2 ptr) - to compare s1 and s2 ignoring cases, strncasecmp with no of chars from s1 to s2
-strncatstrncpy (target destination to be added, source string to be added, no of chars to add from source)
+strncat / strncpy (target destination to be added, source string to be added, no of chars to add from source)
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
