@@ -16,6 +16,12 @@ void create_profile(Profile *profile, int id, const char *name, const char *emai
         printf("Master password ""%s"" not strong enough.\n", master_password);
         return;
     }
+
+    static char *profile_output_image[256];
+    if(!isValidImage(profile_image_path, profile_output_image)){
+        printf("Image ""%s"" is not valid.\n", profile_image_path);
+        return;
+    }
     
 }
 
