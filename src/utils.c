@@ -282,3 +282,7 @@ bool isValidImage(const char *image_path, char *output_path){
     return true;
 }
 
+void embed_password_in_image(const char *hashed_password, const char *master_image, const char *password){
+
+}
+
