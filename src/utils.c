@@ -24,6 +24,15 @@ bool contains_invalid_chars(const char *str, const char *invalid_chars_email){
     return false;
 }
 
+// Check if name is valid
+bool isValidName(const char *name){
+    const char invalid_chars_name[] = "/:;<>,[]\t\n\r@."
+    if (contains_invalid_chars(name, invalid_chars_name)){
+        return false;
+    }
+    return true;
+}
+
 // Check if email is valid
 bool isValidEmail(const char *email) {
     const char invalid_chars_email[] = "/:;<>,[] \t\n\r";

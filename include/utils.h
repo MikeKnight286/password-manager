@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+bool isValidName(const char *name);
 bool isValidEmail(const char *email);
 bool isStrongPassword(const char *password);
 void string_to_argon2hash(const char *input_string, char *hashed_string);

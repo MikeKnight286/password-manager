@@ -8,6 +8,21 @@
 /* PROFILE MANAGEMENT */
 void create_profile(Profile *profile, int id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
     // Error handling 
+    if(!profile || !name || !email || !master_password || !profile_image_path ||master_password_image_path){
+        printf("Missing input parameters.\n");
+        return;
+    }
+
+    if(strlen(name) >= sizeof(profile->user_Name) || strlen(email) >= sizeof(profile->user_Email)){
+        printf("Name or email too long.\n");
+        return;
+    }
+
+    if(!isValidName(name)){
+        printf("Invalid name: %s\n", name);
+        return;
+    }
+
     if(!isValidEmail(email)){
         printf("Invalid email address: %s\n", email);
         return;
