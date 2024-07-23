@@ -14,9 +14,20 @@
 #define SECONDS_PER_GUESS (SINGLE_GUESS / NUM_ATTACKERS)
 
 // Check if string contains invalid chars
-bool contains_invalid_chars(const char *str, const char *invalid_chars_email){
+bool contains_invalid_chars(const char *str, const char *invalid_chars){
     while (*str){
-        if(strchr(invalid_chars_email, *str)){
+        if(strchr(invalid_chars, *str)){
+            return true;
+        }
+        str++;
+    }
+    return false;
+}
+
+// Function to check if a string contains at least one alphabetic char
+bool contains_alpha(const char *str){
+    while(*str){
+        if(isalpha((unsigned char) *str)){
             return true;
         }
         str++;
@@ -26,8 +37,19 @@ bool contains_invalid_chars(const char *str, const char *invalid_chars_email){
 
 // Check if name is valid
 bool isValidName(const char *name){
-    const char invalid_chars_name[] = "/:;<>,[]\t\n\r@."
-    if (contains_invalid_chars(name, invalid_chars_name)){
+    const char invalid_chars_name[] = "/:;<>,[]\t\n\r@.";
+    if(name==NULL){
+        printf("Need name input.\n");
+        return false;
+    }
+
+    if(contains_invalid_chars(name, invalid_chars_name)){
+        printf("Contains invalid characters.\n");
+        return false;
+    }
+
+    if(!contains_alpha(name)){
+        printf("Must contain at least one alphabetic character.\n");
         return false;
     }
     return true;

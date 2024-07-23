@@ -7,17 +7,17 @@
 
 void test_isValidName(){
     const char *valid_names[] = {
-        "John Doe"
-        "Émilie du Châtelet"
+        "John Doe",
+        "Émilie du Châtelet",
         "Mary-Jane O'Neil"
     };
 
     const char *invalid_names[] ={
         "InV@lid Name",
-        "12345"
+        "12345",
+        " "
     };
 
-    printf("Testing isValidName function...\n");
     for(int i=0; i<sizeof(valid_names)/sizeof(valid_names[0]); i++){
         if(isValidName(valid_names[i])){
             printf("Valid name passed: %s\n", valid_names[i]);
@@ -28,9 +28,9 @@ void test_isValidName(){
 
     for(int i=0; i<sizeof(invalid_names)/sizeof(invalid_names[0]); i++){
         if(isValidName(invalid_names[i])){
-            printf("Valid name passed: %s\n", invalid_names[i]);
+            printf("Invalid name passed: %s\n", invalid_names[i]);
         } else {
-            printf("Valid name failed: %s\n", invalid_names[i]);
+            printf("Invalid name failed: %s\n", invalid_names[i]);
         }
     }
 
