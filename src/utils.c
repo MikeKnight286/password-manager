@@ -313,7 +313,7 @@ bool isValidImage(const char *image_path, char *output_path){
     return true;
 }
 
-void embed_password_in_image(const char *hashed_password, const char *master_image, const char *password){
-
+void generate_fingerprint_from_image(const char *input_image, char *image_fingerprint){
+    
 }
 

@@ -63,3 +63,16 @@ zxcvbn library for password strength checker
 ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltEnpy multipart password, Type matching types like dict match, struct ZxcMatch *Next)
 ZxcvbnMatch : main password matching func (password, user defined dict, info on matches), return the entropy in bits
 ZxcvbnFreeInfo : matches data should be freed after func is done
+
+
+Ideas on how to make password manager with steganography (Thought process)
+
+I started this because it sounds fun. I got this idea from PirateSoftware where I saw a shorts on how he stored the passwords with funny images. I am bad at memorizing all the passwords. But what if images become my passwords to all the accounts that I have, I just need to store the images and won't have to memorize the passwords again.
+
+It's not a good idea security wise to embed the passwords directly into image as attackers can directly extract the passwords from the image. Instead use the master password to encrypt the passwords for the accounts and embed the encrypted data into image. 
+
+But how do user use the master image directly without the master password tho? What if they forgot the master password but they still have master image, I want them to be able to use master image as their master password as well.
+
+We can also use the master image to encrypt the password by generating a unique fingerprint of hash from the image. We can do this by using certain attributes of the image like pixels, metadata or a combi of these. Then use this fingerprint to generate a key to re-encrypt the encrypted data again. 
+
+This is like basically dual-key system. Make sure there are backups if both master password and master keys are lost. I think I will store the encrypted data in local file. I have to make sure that only the application can access the file. Might move onto database storage later. 
