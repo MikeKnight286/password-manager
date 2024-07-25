@@ -9,7 +9,7 @@ r+ read when file exists, w+ read and write, create file when file does not exis
 For quotation marks: use escape sequence \ (\"string\" would be "string")
 struct to create a structure, typedef to give alias to this structure (for e.g struct student {vars}; -> each time when we call this struct, it would be struct student s1; // with typedef sturct student {vars} Student; -> Student s1)
 const before datatype ensures that no changes happen to input in function, still allows both const and non-const arguments in funcs
-\r is Carrigae return char
+\r is Carrigae return char (If Hello \rWorld, only World is printed : Hello is printed -> Then the cursor moves to beginning of the line -> World is printed which overlapped the Hello)
 strchr(given string, search char in string): can also be used like strchr(specified char, next to find char) to find the next char after the specified char in the string, also do (ptr+1, char) for char after ptr
 static inside a function : retains the values until the program ends, retains in successive calls to funcs : for e.g. if static char buffer[50] = "Initial"; snprintf(buffer, sizeof(buffer), "Modify"), when the func is called first time, it will give Initial and Modify when called second time 
 static outside a function will be limited to the file it exists
@@ -18,6 +18,9 @@ fprintf to display output at specified stream in a format (stderr, "format") to 
 strncpy (target destination to be copied, source string to be copied, no of chars to copy from source)
 strcasecmp(s1 ptr, s2 ptr) - to compare s1 and s2 ignoring cases, strncasecmp with no of chars from s1 to s2
 strncat / strncpy (target destination to be added, source string to be added, no of chars to add from source)
+isalpha checks if c is alphabetic or not
+pow(x,y) -> x^y
+
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -49,7 +52,9 @@ SDL_Event to hold events of SDL instance
 SDL_GetError() to show stderr with fprintf
 SDL_FreeSurface - free the surface after using it
 IMG_Init(Img flags) like IMG_INIT_JPG | IMG_INIT_PNG to initialize the image
+IMG_Load(image path) to load image, assign this to SDL_Surface *image as a image pointer in SDL surface
 IMG_SavePNG : Save the SDL surface as PNG file
+IMG_Quit to stop the SDL_image
 
 Libsodium for Argon2
 Common context in libsodium :  0 on success, -1 on failure and 1 if already started
@@ -76,3 +81,9 @@ But how do user use the master image directly without the master password tho? W
 We can also use the master image to encrypt the password by generating a unique fingerprint of hash from the image. We can do this by using certain attributes of the image like pixels, metadata or a combi of these. Then use this fingerprint to generate a key to re-encrypt the encrypted data again. 
 
 This is like basically dual-key system. Make sure there are backups if both master password and master keys are lost. I think I will store the encrypted data in local file. I have to make sure that only the application can access the file. Might move onto database storage later. 
+
+I think I will be using Argon2 hash to encrypt the passwords. I also need to encrypt the master password, use it as key to encrypt the passwords for all the accounts. (Scratch this)
+
+There's a better way. I found what is called Key Derivation Function (KDF). It will be two seperate processes: 1: to encrypt the master password for authentication purpose during login, 2: to derive a key or keys from master password with KDF to encrypt other user data such as passwords, and images (System side) For user side, system uses the entered password to regenerate the keys for accessing the encrypted data. 
+
+Now I need to decide which KDF I will use. Argon2 can be used as a part of this KDF since I'm already using it. (Hashing can be a part of KDF). I also need to decide on a way to generate fingerprints for the images. 
