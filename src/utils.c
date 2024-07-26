@@ -234,6 +234,14 @@ bool verify_argon2hash(const char *input_string, const char *hashed_string){
     return false;
 }
 
+void generate_fingerprint_from_image(const char *input_image, char *image_fingerprint){
+    
+}
+
+void generate_key_from_password(const char *password, char *key){
+    
+}
+
 // Convert JPEG to PNG for lossless compression 
 bool convertJPEGtoPNG(const char *jpeg_path, const char *png_path){
     // Initialize SDL2_image for JPG and PNG 
@@ -313,7 +321,5 @@ bool isValidImage(const char *image_path, char *output_path){
     return true;
 }
 
-void generate_fingerprint_from_image(const char *input_image, char *image_fingerprint){
-    
-}
+
 
