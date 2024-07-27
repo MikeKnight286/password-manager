@@ -87,3 +87,7 @@ I think I will be using Argon2 hash to encrypt the passwords. I also need to enc
 There's a better way. I found what is called Key Derivation Function (KDF). It will be two seperate processes: 1: to encrypt the master password for authentication purpose during login, 2: to derive a key or keys from master password with KDF to encrypt other user data such as passwords, and images (System side) For user side, system uses the entered password to regenerate the keys for accessing the encrypted data. 
 
 Now I need to decide which KDF I will use. Argon2 can be used as a part of this KDF since I'm already using it. (Hashing can be a part of KDF). I also need to decide on a way to generate fingerprints for the images. 
+
+Let's start off with image fingerprint. I learned that the image is better if there are more variances, meaning like more colurs, different patterns instead of a random block for an image. This makes sure it has high entropy. So use complex and detailed images. 
+
+Also the same image should produce the same fingerprint across any devices to make sure it has consistency. I still need to decide on which data of image should I use to make a fingerprint. To hash the image data, I will be using SHA256. After hashing the data, then I can derive a key from the hash. ChatGPT suggested me a HKDF but I need to do more research on which I like the most. 
