@@ -91,3 +91,5 @@ Now I need to decide which KDF I will use. Argon2 can be used as a part of this 
 Let's start off with image fingerprint. I learned that the image is better if there are more variances, meaning like more colurs, different patterns instead of a random block for an image. This makes sure it has high entropy. So use complex and detailed images. 
 
 Also the same image should produce the same fingerprint across any devices to make sure it has consistency. I still need to decide on which data of image should I use to make a fingerprint. To hash the image data, I will be using SHA256. After hashing the data, then I can derive a key from the hash. ChatGPT suggested me a HKDF but I need to do more research on which I like the most. 
+
+There is one thing I forgot to think about. Let's say we use a picture of a rabbit that can be found online from Google. That same image would make the same hash if different users use the same picture. So I think I need to use metadata of the image as well besides the pixel data. Combining these two data types, we should make a fingerprint and the key. 
