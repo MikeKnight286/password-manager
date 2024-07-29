@@ -7,6 +7,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "zxcvbn.h"
+#include <openssl/sha.h>
+
 #include "utils.h"
 
 #define SINGLE_GUESS 0.010
@@ -235,7 +237,39 @@ bool verify_argon2hash(const char *input_string, const char *hashed_string){
 }
 
 void generate_fingerprint_from_image(const char *input_image, char *image_fingerprint){
+    // Initialize SDL2_image for loading the image
+    if(SDL_Init(SDL_INIT_VIDEO) < 0){
+        fprintf(stderr, "Cannot initalize SDL: %s\n", SDL_GetError());
+        return;
+    }
+
+    // Only accept PNG file for loseless compression
+    IMG_Init(IMG_INIT_PNG);
+
+    SDL_Surface *image = IMG_Load(input_image);
+    if(!image){
+        fprintf(stderr, "Unable to load image: %s\n", SDL_GetError());
+        IMG_Quit();
+        SDL_Quit();
+        return;
+    }
+
+    // Initialize SHA256 context
+    SHA256_CTX ctx;
+    SHA256_Init(&ctx);
+
+    // Process the pixel data
+    SHA256_Update(&ctx, image->pixels, image->w * image->h * image->format->BytesPerPixel);
+
+    // Process the metadata 
     
+
+    // Finalize hash
+
+}
+
+void generate_key_from_image(const char *input_image, char *key){
+
 }
 
 void generate_key_from_password(const char *password, char *key){
