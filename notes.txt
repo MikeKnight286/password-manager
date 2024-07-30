@@ -27,6 +27,8 @@ png_structp - pointer to png_struct, central, holds info about PNG file and stat
 png_infop - pointer to metadata of PNG file such as width, height, color type etc. also info about various chunks of information
 png_create_read_struct(png lib version, error ptr, error handler, warn handler)
 setjmp - when lib faces error, it wants to longjmp back to the routine, setjmp to save the current env for longjmp to use (need to use png ptr which is png_jmpbuf)
+png_init_io(png_structp png_ptr, png_FILE_p fp) - to initialize png
+png_read_info(png ptr, info_ptr) to read metadata of png file
 
 libjpeg
 jpeg_decompress_struct - like png_struct, cinfo - instance of struct
@@ -93,3 +95,5 @@ Let's start off with image fingerprint. I learned that the image is better if th
 Also the same image should produce the same fingerprint across any devices to make sure it has consistency. I still need to decide on which data of image should I use to make a fingerprint. To hash the image data, I will be using SHA256. After hashing the data, then I can derive a key from the hash. ChatGPT suggested me a HKDF but I need to do more research on which I like the most. 
 
 There is one thing I forgot to think about. Let's say we use a picture of a rabbit that can be found online from Google. That same image would make the same hash if different users use the same picture. So I think I need to use metadata of the image as well besides the pixel data. Combining these two data types, we should make a fingerprint and the key. 
+
+I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). 
