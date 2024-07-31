@@ -20,15 +20,18 @@ strcasecmp(s1 ptr, s2 ptr) - to compare s1 and s2 ignoring cases, strncasecmp wi
 strncat / strncpy (target destination to be added, source string to be added, no of chars to add from source)
 isalpha checks if c is alphabetic or not
 pow(x,y) -> x^y
+To open files, use file ptr like this : FILE *fp = fopen(file, "rwa modes")
+
 
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
 png_infop - pointer to metadata of PNG file such as width, height, color type etc. also info about various chunks of information
-png_create_read_struct(png lib version, error ptr, error handler, warn handler)
+png_create_read_struct(png lib version, error ptr, error handler, warn handler) to create struct of png file
+png_create_info_struct(png ptr) to create metadata struct of png
 setjmp - when lib faces error, it wants to longjmp back to the routine, setjmp to save the current env for longjmp to use (need to use png ptr which is png_jmpbuf)
-png_init_io(png_structp png_ptr, png_FILE_p fp) - to initialize png
-png_read_info(png ptr, info_ptr) to read metadata of png file
+png_init_io(png_structp png_ptr, png_FILE_p fp) - to initialize png file
+png_read_info(png ptr, info_ptr) to read metadata of png file (low-level read)
 
 libjpeg
 jpeg_decompress_struct - like png_struct, cinfo - instance of struct
@@ -45,7 +48,7 @@ j_common_ptr - generic pointer type for both compression and decompression
 JPOOL_IMAGE - memory pool for allocation, will be freed when the decompression object is destroyed
 
 SDL for Rendering Image
-SDL_INIT_VIDEO - To initiate SDL and Video (Image)
+SDL_Init(SDL flags) like SDL_INIT_VIDEO - To initiate SDL and Video (Image), there can be audio, joystick and so on
 SDL_CreateWindow(const char *title, pos x of window, pos y of window, width, height, flags like SDL_WINDOW_FULLSCREEEN, shown, hidden, resizable)
 SDL_Renderer(window instance/ptr to struct, index (if -1 is passed, choose the first driver that supports the flags), SDL_RENDERER_ACCELERATED for hardware acceleration, software for software fallback, presentvsync, targettexture)
 SDL_Surface stores the raw pixel data and bit info of image file
@@ -96,4 +99,6 @@ Also the same image should produce the same fingerprint across any devices to ma
 
 There is one thing I forgot to think about. Let's say we use a picture of a rabbit that can be found online from Google. That same image would make the same hash if different users use the same picture. So I think I need to use metadata of the image as well besides the pixel data. Combining these two data types, we should make a fingerprint and the key. 
 
-I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). 
+I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). \
+
+I have wronged. I think the time and text metadata are not enough to make the image fingerprints unique. So now, I want to add user-specific metadata to make the image tied to each user. 
