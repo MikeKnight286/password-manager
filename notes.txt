@@ -101,4 +101,4 @@ There is one thing I forgot to think about. Let's say we use a picture of a rabb
 
 I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). \
 
-I have wronged. I think the time and text metadata are not enough to make the image fingerprints unique. So now, I want to add user-specific metadata to make the image tied to each user. 
+I have wronged. I think the time and text metadata are not enough to make the image fingerprints unique. So now, I want to add user-specific metadata to make the image tied to each user. Probably I would add user id and email to the fingerprint. 
