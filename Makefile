@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Iinclude -I/mingw64/include -I/mingw64/include/SDL2 -I/mingw64/include/sodium -Ilibs/zxcvbn-c
-LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn
-TEST_LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -Wl,--subsystem,console
+LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -lcrypto
+TEST_LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -lcrypto -Wl,--subsystem,console
 
 SRC = $(wildcard src/*.c)
 OBJ = $(SRC:.c=.o)

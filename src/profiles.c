@@ -29,7 +29,7 @@ void create_profile(Profile *profile, int id, const char *name, const char *emai
     }
     
     if(!isStrongPassword(master_password)){
-        printf("Master password ""%s"" not strong enough.\n", master_password);
+        printf("Master password not strong enough.\n", master_password);
         return;
     }
 
@@ -41,7 +41,7 @@ void create_profile(Profile *profile, int id, const char *name, const char *emai
     
     static char master_image_output_path[256]; // char array to store master image output file path
     if(!isValidImage(master_password_image_path, master_image_output_path)){
-        printf("Image \"%s\" is not valid.\n", profile_image_path);
+        printf("Image \"%s\" is not valid.\n", master_password_image_path);
         return;
     }
 
