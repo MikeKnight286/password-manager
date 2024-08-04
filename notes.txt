@@ -22,8 +22,6 @@ isalpha checks if c is alphabetic or not
 pow(x,y) -> x^y
 To open files, use file ptr like this : FILE *fp = fopen(file, "rwa modes")
 
-
-
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
 png_infop - pointer to metadata of PNG file such as width, height, color type etc. also info about various chunks of information
