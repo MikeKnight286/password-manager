@@ -2,7 +2,7 @@ C Notes
 
 fflush to immediately display the contents of an output stream instead of buffering them and then writing it to an stdout or file (for immediate feedback)
 printf and fprinf - former stdout, latter to a file or named output stream
-* is pointer, & is address of * (e.g. *ptr = &a, menaing ptr now holds address of a) 
+* is pointer, & is address of * (e.g. *ptr = &a, menaing ptr now holds address of a) : use it for allocating memory dynamically, or modifying variables or accesssing them and handling files
 r w a for read, write and append, b to everything for binary
 r+ read when file exists, w+ read and write, create file when file does not exist, if exist, truncate (delete) the contents, a+ read and append, same with w+ but at the end of the file
 %s - string, %d - int, %f - float (%1.f -> up to 1 decimal), %c - char, $lf - double (up to 15 decimals)
@@ -21,6 +21,9 @@ strncat / strncpy (target destination to be added, source string to be added, no
 isalpha checks if c is alphabetic or not
 pow(x,y) -> x^y
 To open files, use file ptr like this : FILE *fp = fopen(file, "rwa modes")
+strstr(string, substring) to find substring in string, returns ptr to first occurence otherwise NULL
+
+Line 66 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -30,6 +33,11 @@ png_create_info_struct(png ptr) to create metadata struct of png
 setjmp - when lib faces error, it wants to longjmp back to the routine, setjmp to save the current env for longjmp to use (need to use png ptr which is png_jmpbuf)
 png_init_io(png_structp png_ptr, png_FILE_p fp) - to initialize png file
 png_read_info(png ptr, info_ptr) to read metadata of png file (low-level read)
+png_time for last modified date of PNG file, can also be creation date(vague) 
+png_get_tIME(png_ptr, info_ptr, &mod_time) to get mod time metadata at mod_time
+png_text for array of textual data of PNG file : key for keyword for comment, text for text comments for keyword
+png_get_text(png_ptr, info_ptr, &text_ptr, &num_text) to get textual data and store at text_ptr and num_text
+
 
 libjpeg
 jpeg_decompress_struct - like png_struct, cinfo - instance of struct
@@ -54,7 +62,7 @@ SDL_CreateTextureFromSurface creates texture from stored raw pixel surface data
 SDL_Event to hold events of SDL instance
 SDL_GetError() to show stderr with fprintf
 SDL_FreeSurface - free the surface after using it
-IMG_Init(Img flags) like IMG_INIT_JPG | IMG_INIT_PNG to initialize the image
+IMG_Init(Img flags) like IMG_INIT_JPG | IMG_INIT_PNG to initialize the image, if != Img flags, the support for the image is not available
 IMG_Load(image path) to load image, assign this to SDL_Surface *image as a image pointer in SDL surface
 IMG_SavePNG : Save the SDL surface as PNG file
 IMG_Quit to stop the SDL_image
@@ -72,6 +80,13 @@ ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltE
 ZxcvbnMatch : main password matching func (password, user defined dict, info on matches), return the entropy in bits
 ZxcvbnFreeInfo : matches data should be freed after func is done
 
+OpenSSL's EVP library
+EVP_MD_CTX : context structure used by EVP digest funcs. Holds all info to compute a digest(hash), returns 1 on success
+EVP_MD_CTX_new() to allocate a new EVP_MD_CTX in memory
+EVP_DigestInit_ex(evp struct, digest type, NULL for default implementation) to initialize digest context
+EVP_DigestUpdate(evp struct, data, data_len) for hashing data_len bytes of data into mdctx context
+EVP_DigestFinal_ex(evp struct, output, output_len) for adding data to output and set to length of output_len for hash
+EVP_MD_CTX_free(evp struct context) to free up memory
 
 Ideas on how to make password manager with steganography (Thought process)
 
