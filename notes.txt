@@ -24,6 +24,8 @@ To open files, use file ptr like this : FILE *fp = fopen(file, "rwa modes")
 strstr(string, substring) to find substring in string, returns ptr to first occurence otherwise NULL
 %zu is for printing strken(), or size_t 
 memset(ptr to fill, int value, size_t number of bytes) to fill the memory of block with value for the size_t
+malloc(size) to allocate a block of size of memory and return a pointer to first byte when success
+memcpy(dest, src, size) to copies bytes from src to dest for no of bytes(size) : to implicitly create objects
 
 Line 66 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
 
@@ -67,6 +69,7 @@ IMG_Init(Img flags) like IMG_INIT_JPG | IMG_INIT_PNG to initialize the image, if
 IMG_Load(image path) to load image, assign this to SDL_Surface *image as a image pointer in SDL surface
 IMG_SavePNG : Save the SDL surface as PNG file
 IMG_Quit to stop the SDL_image
+From SDL_Surface *image, you can get pixels, w, h, format->BytesPerPixel as metadata of images
 
 Libsodium for Argon2
 Common context in libsodium :  0 on success, -1 on failure and 1 if already started
