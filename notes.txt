@@ -75,8 +75,8 @@ Libsodium for Argon2
 Common context in libsodium :  0 on success, -1 on failure and 1 if already started
 sodium_init to initalize the lib, have context
 crypto_pwhash_STRBYTES - 128, for storing the complete hashed password string with metadata, for storage and verification, /// there are also BYTES for when only raw hash output is needed, SALTBYTES for defining salt size to ensure unique hashes
-crypto_pwhash(out, outlen, passwd, passwd_len, salt, time cost, mem cost, ) to derive a key to out from passwd with salt, pass time, memory and algo
-crypto_pwhash_OPSLIMIT_* for time cost, MEMLIMIT_* for memory cost, can be choosen between INTERACTIVE, MODERATE, and SENSITIVE (low to high), crypto_pwhash_ALG_DEFAULT for currently recommended algorithm for deriving key
+crypto_pwhash(out, outlen, passwd, passwd_len, salt, time cost, mem cost, algo) to derive a key to out from passwd with salt, pass time, memory and algo
+crypto_pwhash_OPSLIMIT_* for time cost, MEMLIMIT_* for memory cost, can be choosen between INTERACTIVE, MODERATE, and SENSITIVE (low to high), crypto_pwhash_ALG_DEFAULT for currently recommended algorithm, ALG_ARGON2ID13 for Argon2ID3 for deriving key
 crypto_pwhash_str(output_hash, input_string, strlen(input), time cost, memory cost), have context
 crypto_pwhash_str_verify(hashed_string, input_password, strlen(input_string)) to verify the hash. Has common context
 crypto_kdf_BYTES_MIN - 16, MAX -64, crypto_kdf_KEYBYTES - 32
@@ -124,6 +124,12 @@ Also the same image should produce the same fingerprint across any devices to ma
 
 There is one thing I forgot to think about. Let's say we use a picture of a rabbit that can be found online from Google. That same image would make the same hash if different users use the same picture. So I think I need to use metadata of the image as well besides the pixel data. Combining these two data types, we should make a fingerprint and the key. 
 
-I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). \
+I have decided on using the time and text metadata of the image to make a unique fingerprint (hash) for the image. I will derive the key from the fingerprint with libsodium's HKDF (HMAC-based Key Derivation Function). 
 
 I have wronged. I think the time and text metadata are not enough to make the image fingerprints unique. So now, I want to add user-specific metadata to make the image tied to each user. Probably I would add user id and email to the fingerprint. 
+
+I have done generating keys from master image and master password (string). Now how do I use these to encrypt the passwords and account usernames for the customers? Before that, I need to start making a general user flow. 
+
+First customer can use the password manager by having master password and master image. These two will be used to access all the passwords and accounts user has generated or stored. When the user registers or log into an account on the web, the password manager should generate a password or let user input their own for the account and memorize the username and password and website for the customer. I will also ask them to upload or select an image related to the account like camera for Instagram. I might need to explain why I do this way professionally later but for now the reason is because it's fun. 
+
+Then I will use the derived keys to encrypt the account usernames and passwords, storing them in the user-selected images while making sure it does not degrade the quality. When accessing the accounts, user will upload the master image or log in with master password to decrypt the keys then upload the specific account image to decrypt the hidden username and password. I will also implement browser extensions or mobile apps for copying the passwords into clipboard. 
