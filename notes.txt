@@ -26,6 +26,8 @@ strstr(string, substring) to find substring in string, returns ptr to first occu
 memset(ptr to fill, int value, size_t number of bytes) to fill the memory of block with value for the size_t
 malloc(size) to allocate a block of size of memory and return a pointer to first byte when success
 memcpy(dest, src, size) to copies bytes from src to dest for no of bytes(size) : to implicitly create objects
+Uint32 : unsigned int with 32 bits
+'\0' is NULL character or NULL terminator
 
 Line 66 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
 
@@ -85,6 +87,10 @@ sodium_hex2bin(bin, bin_maxlen, hex, hex_len, ignore, bin_len, hex_end) to conve
 crypto_kdf_derive_from_key(subkey, subkey_len, subkey_id, context, key) to derive a subkey from master key, use different contexts for different keys
 crypto_pwhash_SALTBYTES - salt's fixed length
 randombytes_buf(nonce, sizeof nonce) to create a nonce (in our case, the salt)
+crypto_secretbox_easy(*c,*m,mlen,*n,*k) : encrypts m of mlen bytes with key k and nonce n to encrypt ciphertext (auth tag + encrypted message)
+ciphertext should be at least crypto_secretbox_MACBYTES + mlen long
+crypto_secretbox_NONCEBYTES for nonce (salt)
+crypto_secretbox_open_easy(*m, *c, clen, *n, *k)c is auth tag + encrypted message combination, nonce and key must match with the encrypt one
 
 zxcvbn library for password strength checker
 ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltEnpy multipart password, Type matching types like dict match, struct ZxcMatch *Next)
