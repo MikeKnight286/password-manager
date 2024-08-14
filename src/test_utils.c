@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 #include <sodium.h>
 #include "utils.h"
 #include "test_utils.h"
@@ -171,77 +172,185 @@ void test_generate_key_from_password(char *pwd_key){
     printf("\n");
 }
 
+// Function to generate simple test data
+void generate_simple_data(unsigned char **test_data, size_t *test_data_len) {
+    // Seed the random number generator
+    srand(time(NULL));
+
+    // Define the length of the test data
+    *test_data_len = 100; // For example, 100 bytes of data
+
+    // Allocate memory for the test data
+    *test_data = (unsigned char *)malloc(*test_data_len * sizeof(unsigned char));
+
+    // Generate random data
+    for (size_t i = 0; i < *test_data_len; i++) {
+        (*test_data)[i] = rand() % 256; // Random byte between 0 and 255
+    }
+}
+
 void test_encrypt_decrypt_data(const char *pwd_key, const char *img_key) {
     const char *account_username = "test_username";
     const char *account_domain = "test_domain.com";
     const char *account_password = "ThatBrutalXXNinja280901!";
 
-    unsigned char *encrypted_username = NULL;
-    size_t encrypted_username_len;
-    unsigned char *encrypted_domain = NULL;
-    size_t encrypted_domain_len;
-    unsigned char *encrypted_password = NULL;
-    size_t encrypted_password_len;
+    EncryptedPart parts[3] = {0};  // username, domain, password
 
+    // Encrypt each part
+    if (!encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_username, strlen(account_username), &parts[0].data, &parts[0].length) ||
+        !encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_domain, strlen(account_domain), &parts[1].data, &parts[1].length) ||
+        !encrypt_data((const unsigned char *)img_key, (const unsigned char *)account_password, strlen(account_password), &parts[2].data, &parts[2].length)) {
+        fprintf(stderr, "Encryption failed.\n");
+        goto cleanup;
+    }
+
+    // Print encrypted lengths for debugging
+    printf("Encrypted username length: %zu\n", parts[0].length);
+    printf("Encrypted domain length: %zu\n", parts[1].length);
+    printf("Encrypted password length: %zu\n", parts[2].length);
+
+    // Decrypt each part
     char decrypted_username[256] = {0};
     char decrypted_domain[256] = {0};
     char decrypted_password[256] = {0};
-    size_t decrypted_username_len, decrypted_domain_len, decrypted_password_len;
+    size_t decrypted_lengths[3] = {0};
 
-    // Encrypt data
-    encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_username, strlen(account_username), &encrypted_username, &encrypted_username_len);
-    encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_domain, strlen(account_domain), &encrypted_domain, &encrypted_domain_len);
-    encrypt_data((const unsigned char *)img_key, (const unsigned char *)account_password, strlen(account_password), &encrypted_password, &encrypted_password_len);
+    if (!decrypt_data((const unsigned char *)pwd_key, parts[0].data, parts[0].length, (unsigned char *)decrypted_username, &decrypted_lengths[0]) ||
+        !decrypt_data((const unsigned char *)pwd_key, parts[1].data, parts[1].length, (unsigned char *)decrypted_domain, &decrypted_lengths[1]) ||
+        !decrypt_data((const unsigned char *)img_key, parts[2].data, parts[2].length, (unsigned char *)decrypted_password, &decrypted_lengths[2])) {
+        fprintf(stderr, "Decryption failed.\n");
+        goto cleanup;
+    }
 
-    // Decrypt data
-    decrypt_data((const unsigned char *)pwd_key, encrypted_username, encrypted_username_len, (unsigned char *)decrypted_username, &decrypted_username_len);
-    decrypt_data((const unsigned char *)pwd_key, encrypted_domain, encrypted_domain_len, (unsigned char *)decrypted_domain, &decrypted_domain_len);
-    decrypt_data((const unsigned char *)img_key, encrypted_password, encrypted_password_len, (unsigned char *)decrypted_password, &decrypted_password_len);
+    // Null-terminate the decrypted strings
+    decrypted_username[decrypted_lengths[0]] = '\0';
+    decrypted_domain[decrypted_lengths[1]] = '\0';
+    decrypted_password[decrypted_lengths[2]] = '\0';
 
     // Output results for debugging
     printf("Decrypted Username: %s\n", decrypted_username);
     printf("Decrypted Domain: %s\n", decrypted_domain);
     printf("Decrypted Password: %s\n", decrypted_password);
 
+    // Verify decrypted data matches original
+    if (strcmp(account_username, decrypted_username) == 0 &&
+        strcmp(account_domain, decrypted_domain) == 0 &&
+        strcmp(account_password, decrypted_password) == 0) {
+        printf("Test passed: All data encrypted and decrypted successfully.\n");
+    } else {
+        fprintf(stderr, "Test failed: Decrypted data does not match original.\n");
+    }
+
+cleanup:
     // Free allocated memory
-    free(encrypted_username);
-    free(encrypted_domain);
-    free(encrypted_password);
+    for (int i = 0; i < 3; i++) {
+        if (parts[i].data) {
+            sodium_memzero(parts[i].data, parts[i].length);
+            free(parts[i].data);
+        }
+    }
 }
 
-// void test_encrypt_decrypt_data_from_image(const char *pwd_key, const char *img_key, const char *input_image, char *output_image){
-    // const char *account_username = "test_username";
-    // const char *account_domain = "test_domain.com";
-    // const char *account_password = "ThatBrutalXXNinja280901!";
+// Utility function to embed and extract data for testing
+void test_embed_extract_data_from_image() {
+    const char *input_image_path = "plaintext_image.png";
+    const char *output_image_path = "ciphertext_image.png";
 
-    // char decrypted_username[256] = {0};
-    // char decrypted_domain[256] = {0};
-    // char decrypted_password[256] = {0};
+    // Generate random test data
+    unsigned char *test_data, *extracted_data;
+    size_t test_data_len, extracted_data_len;
+    generate_simple_data(&test_data, &test_data_len);
 
-//     encrypt_credentials_into_image(pwd_key, img_key, account_username, account_domain, account_password, input_image, output_image);
-//     decrypt_credentials_from_image(pwd_key, img_key, output_image, decrypted_username, decrypted_domain, decrypted_password);
+    printf("Test_data_len: %zu\n", test_data_len);
 
-//     // // Print results for manual verification
-//     // printf("Decrypted_username: %s\n", decrypted_username);
-//     // printf("Decrypted_domain: %s\n", decrypted_domain);
-//     // printf("Decrypted_password: %s\n", decrypted_password);
+    // Embed the data into an image
+    if(!embed_data_into_image(input_image_path, output_image_path, test_data, test_data_len)){
+        fprintf(stderr, "Failed to embed data\n");
+        return;
+    };
+    
+    // Extract the data from the image
+    if(!extract_data_from_image(output_image_path, &extracted_data, &extracted_data_len)){
+        fprintf(stderr, "Failed to extract data\n");
+        return;
+    };
 
-//     // Add checks to automatically verify correctness
-//     if (strcmp(account_username, decrypted_username) != 0) {
-//         printf("Error: Decrypted username does not match the original!\n");
-//     } else {
-//         printf("Success: Decrypted username matches the original.\n");
-//     }
+    // Compare the original and extracted data
+    if (test_data_len != extracted_data_len) {
+        printf("Test failed: Data lengths differ.\n");
+    } else if (memcmp(test_data, extracted_data, test_data_len) == 0) {
+        printf("Test passed: Data extracted matches the original.\n");
+    } else {
+        printf("Test failed: Extracted data does not match the original.\n");
+    }
 
-//     if (strcmp(account_domain, decrypted_domain) != 0) {
-//         printf("Error: Decrypted domain does not match the original!\n");
-//     } else {
-//         printf("Success: Decrypted domain matches the original.\n");
-//     }
+    // Clean up
+    free(test_data);
+    free(extracted_data);
+}
 
-//     if (strcmp(account_password, decrypted_password) != 0) {
-//         printf("Error: Decrypted password does not match the original!\n");
-//     } else {
-//         printf("Success: Decrypted password matches the original.\n");
-//     }
-// }
+void test_encrypt_decrypt_data_from_image(const char *pwd_key, const char *img_key, const char *input_image, char *output_image) {
+    // Test credentials
+    const char *account_username = "test_username_for_domain";
+    const char *account_domain = "test_domain.com";
+    const char *account_password = "ThatBrutalXXNinja280901!";
+
+    unsigned char *encrypted_username, *encrypted_domain, *encrypted_password;
+    size_t encrypted_username_len, encrypted_domain_len, encrypted_password_len;
+
+    // Encrypt data
+    if (!encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_username, strlen(account_username), &encrypted_username, &encrypted_username_len) ||
+        !encrypt_data((const unsigned char *)pwd_key, (const unsigned char *)account_domain, strlen(account_domain), &encrypted_domain, &encrypted_domain_len) ||
+        !encrypt_data((const unsigned char *)img_key, (const unsigned char *)account_password, strlen(account_password), &encrypted_password, &encrypted_password_len)) {
+        printf("Encryption failed\n");
+        return;
+    }
+
+    // Combine encrypted data
+    size_t total_data_len = encrypted_username_len + encrypted_domain_len + encrypted_password_len;
+    unsigned char *combined_data = malloc(total_data_len);
+    if (!combined_data) {
+        printf("Failed to allocate memory for combined data\n");
+        return;
+    }
+    memcpy(combined_data, encrypted_username, encrypted_username_len);
+    memcpy(combined_data + encrypted_username_len, encrypted_domain, encrypted_domain_len);
+    memcpy(combined_data + encrypted_username_len + encrypted_domain_len, encrypted_password, encrypted_password_len);
+
+    // Embed combined data into an image
+    if (!embed_data_into_image(input_image, output_image, combined_data, total_data_len)) {
+        printf("Failed to embed data into image\n");
+        free(combined_data);
+        return;
+    }
+    free(combined_data);
+
+    // Extract data from image
+    unsigned char *extracted_data;
+    size_t extracted_data_len;
+    if (!extract_data_from_image(output_image, &extracted_data, &extracted_data_len)) {
+        printf("Failed to extract data from image\n");
+        return;
+    }
+
+    // Decrypt extracted data
+    unsigned char decrypted_username[1024], decrypted_domain[1024], decrypted_password[1024];
+    size_t decrypted_username_len, decrypted_domain_len, decrypted_password_len;
+    if (!decrypt_data((const unsigned char *)pwd_key, extracted_data, encrypted_username_len, decrypted_username, &decrypted_username_len) ||
+        !decrypt_data((const unsigned char *)pwd_key, extracted_data + encrypted_username_len, encrypted_domain_len, decrypted_domain, &decrypted_domain_len) ||
+        !decrypt_data((const unsigned char *)img_key, extracted_data + encrypted_username_len + encrypted_domain_len, encrypted_password_len, decrypted_password, &decrypted_password_len)) {
+        printf("Decryption failed\n");
+        free(extracted_data);
+        return;
+    }
+    decrypted_username[decrypted_username_len] = '\0';
+    decrypted_domain[decrypted_domain_len] = '\0';
+    decrypted_password[decrypted_password_len] = '\0';
+
+    // Output decrypted data
+    printf("Decrypted Username: %s\n", decrypted_username);
+    printf("Decrypted Domain: %s\n", decrypted_domain);
+    printf("Decrypted Password: %s\n", decrypted_password);
+
+    free(extracted_data);
+}
