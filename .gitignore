@@ -30,7 +30,9 @@ test.jpg
 test.png
 jpg_to_change.jpg
 jpg_to_change.png
-fingerprint_image_test.png
+plaintext_image.png
+ciphertext_image.png
+cipher_encrypted.png
 
 # Ignore IDE and editor-specific files
 .vscode/
