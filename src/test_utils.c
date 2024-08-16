@@ -354,3 +354,15 @@ void test_encrypt_decrypt_data_from_image(const char *pwd_key, const char *img_k
 
     free(extracted_data);
 }
+
+// Test generating random password given username and domain
+void test_generate_random_password(){
+    const char *account_username = "test_username_for_domain";
+    const char *account_domain = "test_domain.com";
+
+    char generated_password[256];
+
+    generate_random_password(account_username, account_domain, generated_password);
+    printf("Generated password: %s\n", generated_password);
+
+}
