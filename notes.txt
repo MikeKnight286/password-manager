@@ -27,7 +27,18 @@ memset(ptr to fill, int value, size_t number of bytes) to fill the memory of blo
 malloc(size) to allocate a block of size of memory and return a pointer to first byte when success
 memcpy(dest, src, size) to copies bytes from src to dest for no of bytes(size) : to implicitly create objects
 Uint32 : unsigned int with 32 bits
+unsigned char to handle raw binary data, pixels, bit and buffer manipulation, character encoding (non-negative)
 '\0' is NULL character or NULL terminator
+\x to indicate hexadecimal value \x00 is basically \0 where 00 (hexa) is 0 (byte value)
+%02x in printf, snprintf or sprintf means shows hexadecimal value with at least two char wide (pad with zero if only one char) of the integer (like if 255 : ff, 5 : 05)
+Left most byte is Most Significant Byte (MSB) and Right most is LSB
+Little-endian means LSB is stored at lowest memory address and MSB at highest one (e.g. 0x12345678 : would be 0x78 at 0x1000, 0x56 at 0x1001, .. 0x12 at 0x1003), Big-endian is opposite, Little is used in x86 and x86-64 (personal computers), Network byte order uses big-endian
+>> right-shift, << left-shift
+Bitwise & AND, uses to mask out certain bits (clearing bits), | OR to set specific bits (embedding bits)
+goto : label to jump to this statement
+Ternary operator : First : comparison argument, Second : result upon a true comparison, Third : result upon a false comparison (For e.g. condition ? value_true : value_false)
+free(ptr) to free the memory block at ptr 
+rand() % n : generates a random no from 0 to n-1 inclusive
 
 Line 66 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
 /* pixels[(i * 8) + bit] : calculates index of pixel in pixels array where current bit will be embedded (byte of data is spread across 8 consecutive pixels)
@@ -35,13 +46,6 @@ pixels[(i * 8) + bit] & 0xFFFFFFFE clears the least significant bit of pixel val
 data[i] >> (7 - bit) shifts the current byte of data right by '(7 - bit)' positions to bring the current bit to LSB position & 1 extracts the LSB of this shifted value (for e.g suppose we have 0b10100001 and we want to find the bit at pos 2, we shift by 7-2=5 which becomes 0b00000101, now 1 at position 2 originally becomes LSB, we & 1 with it which becomes 00000001, which is the value of bit at pos 2 at original byte)
 | OR operation sets the LSB of the pixel value to the current bit of data , combining the pixel value with data bit (basically set 0(pixel) | 1(data) or 0(pixel) | 0(data) and add the 1 or 0 of the data using OR operation)
 */
-/*
-!= OR operator
-(pixels[(i * 8) + bit] & 1 gives 0 or 1 depending on LSB of pixel by masking out except LSB
-<< (7 - bit) : shift to left by bits
-Basically combines the shifted bit with exisiting bits of data[i] using != operator
-*/
-
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
@@ -84,6 +88,7 @@ IMG_Load(image path) to load image, assign this to SDL_Surface *image as a image
 IMG_SavePNG : Save the SDL surface as PNG file
 IMG_Quit to stop the SDL_image
 From SDL_Surface *image, you can get pixels, w, h, format->BytesPerPixel as metadata of images
+SDL_ConvertSurfaceFormat(src, pixel_format, flags (set to 0 always)): SDL_PIXELFORMAT_RGBA32 to RGBA byte array of color data (can also be ARGB, BGRA, ABGR)
 
 Libsodium for Argon2
 Common context in libsodium :  0 on success, -1 on failure and 1 if already started
@@ -103,6 +108,7 @@ crypto_secretbox_easy(*c,*m,mlen,*n,*k) : encrypts m of mlen bytes with key k an
 ciphertext should be at least crypto_secretbox_MACBYTES + mlen long
 crypto_secretbox_NONCEBYTES for nonce (salt)
 crypto_secretbox_open_easy(*m, *c, clen, *n, *k)c is auth tag + encrypted message combination, nonce and key must match with the encrypt one
+sodium_memzero(point, len) to zero bytes from point for len bytes (to overwrite sensitive data)
 
 zxcvbn library for password strength checker
 ZxcMatch_t : struct of ZxcMatch(Begin begin, Length length, Entrpy entropy, MltEnpy multipart password, Type matching types like dict match, struct ZxcMatch *Next)
