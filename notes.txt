@@ -40,12 +40,7 @@ Ternary operator : First : comparison argument, Second : result upon a true comp
 free(ptr) to free the memory block at ptr 
 rand() % n : generates a random no from 0 to n-1 inclusive
 
-Line 66 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
-/* pixels[(i * 8) + bit] : calculates index of pixel in pixels array where current bit will be embedded (byte of data is spread across 8 consecutive pixels)
-pixels[(i * 8) + bit] & 0xFFFFFFFE clears the least significant bit of pixel value by performing a bitwise AND with 0xFFFFFFFE, which sets LSB to 0 but keep others  
-data[i] >> (7 - bit) shifts the current byte of data right by '(7 - bit)' positions to bring the current bit to LSB position & 1 extracts the LSB of this shifted value (for e.g suppose we have 0b10100001 and we want to find the bit at pos 2, we shift by 7-2=5 which becomes 0b00000101, now 1 at position 2 originally becomes LSB, we & 1 with it which becomes 00000001, which is the value of bit at pos 2 at original byte)
-| OR operation sets the LSB of the pixel value to the current bit of data , combining the pixel value with data bit (basically set 0(pixel) | 1(data) or 0(pixel) | 0(data) and add the 1 or 0 of the data using OR operation)
-*/
+Line 83 *load_PNG_image in utils.c : Used double ptrs to access the files that being modified to outside of the function. If only used single ptr, it will only modify the copies of structs to local function but not outside the function. Give addresses as parameters to the function
 
 libpng 
 png_structp - pointer to png_struct, central, holds info about PNG file and state of PNG writing/reading process
