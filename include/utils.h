@@ -8,6 +8,7 @@ typedef struct {
     size_t length;
 } EncryptedPart;
 
+void generate_random_id(char *id, size_t size);
 void initialize_sdl2_img();
 bool convertImagetoPNG(const char *input_path, const char *png_path);
 bool isValidName(const char *name);
