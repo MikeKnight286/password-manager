@@ -1,18 +1,20 @@
 #ifndef PROFILES_H
 #define PROFILES_H
 
+#include <sodium.h>
+
 #define MAX_USER_NAME_LEN 50
 #define MAX_USER_EMAIL_LEN 50
-#define MAX_MASTER_PASSWORD_LEN 50
 #define MAX_PROFILE_IMAGE_PATH_LEN 256
 #define MAX_MASTER_IMAGE_PATH_LEN 256
+#define CRYPTO_KEY_LEN 32
 
 // User Profile Struct
 typedef struct{
-    int user_ID; // identifier for user
+    int user_ID[7]; // identifier for user
     char user_Name[MAX_USER_NAME_LEN];
     char user_Email[MAX_USER_EMAIL_LEN];
-    char user_Master_password[MAX_MASTER_PASSWORD_LEN]; // hashed version of master password
+    char user_Master_password[crypto_pwhash_STRBYTES]; // hashed version of master password
     char user_Profile_image_path[MAX_PROFILE_IMAGE_PATH_LEN];
     char user_Master_password_image_path[MAX_MASTER_IMAGE_PATH_LEN]; // field for master image path (image that acts as master password)
 }Profile;
