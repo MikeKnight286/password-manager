@@ -11,7 +11,7 @@
 
 // User Profile Struct
 typedef struct{
-    int user_ID[7]; // identifier for user
+    char user_ID[7]; // identifier for user
     char user_Name[MAX_USER_NAME_LEN];
     char user_Email[MAX_USER_EMAIL_LEN];
     char user_Master_password[crypto_pwhash_STRBYTES]; // hashed version of master password
@@ -20,7 +20,7 @@ typedef struct{
 }Profile;
 
 /* PROFILE MANAGERMENT */
-void create_profile(Profile *profile, int id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path);
+void create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path);
 void display_profile(Profile *profile);
 void update_profile_info(Profile *profile, const char *name, const char *email, const char *profile_image_path);
 void delete_profile(Profile *profile);

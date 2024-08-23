@@ -7,10 +7,30 @@
 #include "utils.h"
 
 /* PROFILE MANAGEMENT */
-void create_profile(Profile *profile, int id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
+void create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
     // Error handling 
-    if(!profile || !name || !email || !master_password || !profile_image_path ||master_password_image_path){
-        printf("Missing input parameters.\n");
+    if (!profile) {
+    printf("Error: 'profile' parameter is missing.\n");
+    return;
+    }
+    if (!name) {
+        printf("Error: 'name' parameter is missing.\n");
+        return;
+    }
+    if (!email) {
+        printf("Error: 'email' parameter is missing.\n");
+        return;
+    }
+    if (!master_password) {
+        printf("Error: 'master_password' parameter is missing.\n");
+        return;
+    }
+    if (!profile_image_path) {
+        printf("Error: 'profile_image_path' parameter is missing.\n");
+        return;
+    }
+    if (!master_password_image_path) {
+        printf("Error: 'master_password_image_path' parameter is missing.\n");
         return;
     }
 
@@ -42,7 +62,7 @@ void create_profile(Profile *profile, int id, const char *name, const char *emai
 
     // Generate image fingerprint from master image
     char image_fingerprint[128];
-    generate_fingerprint_from_image(master_password_image_path, atoi(profile->user_ID), email, image_fingerprint);
+    generate_fingerprint_from_image(master_password_image_path, profile->user_ID, email, image_fingerprint);
 
     // Generate cryptographic keys from image fingerprint and master password
     char key_from_password[CRYPTO_KEY_LEN], key_from_image[CRYPTO_KEY_LEN];
