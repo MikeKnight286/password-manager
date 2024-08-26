@@ -97,12 +97,52 @@ void display_profile(Profile *profile){
     printf("Cryptographic Key from Image: [SECURE]\n");
 }
 
-void update_profile_info(Profile *profile, const char *name, const char *email, const char *profile_image_path){
+void update_profile_info(Profile *profile, char *id, const char *name, const char *email, const char *profile_image_path) {
+    // Error handling
+    if (!profile || !id || !name || !email || !profile_image_path) {
+        printf("Missing input parameters.\n");
+        return;
+    }
 
+    // Check if the provided ID matches the profile's ID
+    if (strcmp(profile->user_ID, id) != 0) {
+        printf("Profile ID does not exist or does not match.\n");
+        return;
+    }
+
+    // Update the name, email, and profile image path
+    if (strlen(name) >= sizeof(profile->user_Name)) {
+        printf("Name too long.\n");
+        return;
+    }
+
+    if (strlen(email) >= sizeof(profile->user_Email)) {
+        printf("Email too long.\n");
+        return;
+    }
+
+    strncpy(profile->user_Name, name, MAX_USER_NAME_LEN);
+    strncpy(profile->user_Email, email, MAX_USER_EMAIL_LEN);
+    strncpy(profile->user_Profile_image_path, profile_image_path, MAX_PROFILE_IMAGE_PATH_LEN);
+
+    printf("Profile information updated successfully.\n");
 }
 
-void delete_profile(Profile *profile){
+void delete_profile(Profile *profile) {
+    if (!profile) {
+        printf("Profile does not exist.\n");
+        return;
+    }
 
+    // Clear the profile data
+    memset(profile->user_ID, 0, sizeof(profile->user_ID));
+    memset(profile->user_Name, 0, sizeof(profile->user_Name));
+    memset(profile->user_Email, 0, sizeof(profile->user_Email));
+    memset(profile->user_Master_password, 0, sizeof(profile->user_Master_password));
+    memset(profile->user_Profile_image_path, 0, sizeof(profile->user_Profile_image_path));
+    memset(profile->user_Master_password_image_path, 0, sizeof(profile->user_Master_password_image_path));
+
+    printf("Profile deleted successfully.\n");
 }
 
 
