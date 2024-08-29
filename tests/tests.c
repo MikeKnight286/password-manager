@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "test_libs.h"
+#include "test_profiles.h"
 #include "test_utils.h"
 
 int main() {
@@ -38,9 +39,9 @@ int main() {
     // test_isValidEmail();
     // printf("\n");
 
-    printf("Testing isStrongPassword function...\n");
-    test_isStrongPassword();
-    printf("\n");
+    // printf("Testing isStrongPassword function...\n");
+    // test_isStrongPassword();
+    // printf("\n");
 
     // printf("Testing Argon2 hash function...\n");
     // test_argon2hash();
@@ -68,8 +69,12 @@ int main() {
     // test_encrypt_decrypt_data_from_image(pwd_key, img_key, png_file_name, encrypted_image);
     // printf("\n");
 
-    printf("Testing generate random password function...\n");
-    test_generate_random_password();
-    printf("\n");
+    // printf("Testing generate random password function...\n");
+    // test_generate_random_password();
+    // printf("\n");
+
+    test_create_profile();
+    test_display_profile();
+
     return 0;
 }
