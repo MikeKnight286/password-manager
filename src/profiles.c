@@ -5,53 +5,40 @@
 #include <SDL2/SDL_image.h>
 #include "profiles.h"
 #include "utils.h"
+#include "logger.h"  
+
+#define SUCCESS 0
+#define ERROR_NULL_PARAMETER 1
+#define ERROR_INPUT_TOO_LONG 2
+#define ERROR_INVALID_INPUT 3
+#define ERROR_WEAK_PASSWORD 4
 
 /* PROFILE MANAGEMENT */
-void create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
+int create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
     // Error handling 
-    if (!profile) {
-    printf("Error: 'profile' parameter is missing.\n");
-    return;
-    }
-    if (!name) {
-        printf("Error: 'name' parameter is missing.\n");
-        return;
-    }
-    if (!email) {
-        printf("Error: 'email' parameter is missing.\n");
-        return;
-    }
-    if (!master_password) {
-        printf("Error: 'master_password' parameter is missing.\n");
-        return;
-    }
-    if (!profile_image_path) {
-        printf("Error: 'profile_image_path' parameter is missing.\n");
-        return;
-    }
-    if (!master_password_image_path) {
-        printf("Error: 'master_password_image_path' parameter is missing.\n");
-        return;
+    if (!profile || !name || !email || !master_password || !profile_image_path || !master_password_image_path) {
+        log_error("One or more required parameters are missing.");
+        return ERROR_NULL_PARAMETER;
     }
 
-    if(strlen(name) >= sizeof(profile->user_Name) || strlen(email) >= sizeof(profile->user_Email)){
-        printf("Name or email too long.\n");
-        return;
+    if (strlen(name) >= MAX_USER_NAME_LEN || strlen(email) >= MAX_USER_EMAIL_LEN) {
+        log_error("Name or email exceeds maximum length.");
+        return ERROR_INPUT_TOO_LONG;
     }
 
-    if(!isValidName(name)){
-        printf("Invalid name: %s\n", name);
-        return;
+    if (!isValidName(name)) {
+        log_error("Invalid name provided: %s", name);
+        return ERROR_INVALID_INPUT;
     }
 
-    if(!isValidEmail(email)){
-        printf("Invalid email address: %s\n", email);
-        return;
+    if (!isValidEmail(email)) {
+        log_error("Invalid email address provided: %s", email);
+        return ERROR_INVALID_INPUT;
     }
     
-    if(!isStrongPassword(master_password)){
-        printf("Master password not strong enough.\n", master_password);
-        return;
+    if (!isStrongPassword(master_password)) {
+        log_error("Master password not strong enough.");
+        return ERROR_WEAK_PASSWORD;
     }
 
     // Generate random user ID
@@ -70,31 +57,43 @@ void create_profile(Profile *profile, char *id, const char *name, const char *em
     generate_key_from_image_fingerprint(image_fingerprint, key_from_image, sizeof(key_from_image));
 
     // Store the rest of the data
-    strncpy(profile->user_Name, name, MAX_USER_NAME_LEN);
-    strncpy(profile->user_Email, email, MAX_USER_EMAIL_LEN);
-    strncpy(profile->user_Profile_image_path, profile_image_path, MAX_PROFILE_IMAGE_PATH_LEN);
-    strncpy(profile->user_Master_password_image_path, master_password_image_path, MAX_MASTER_IMAGE_PATH_LEN);
+    strncpy(profile->user_Name, name, MAX_USER_NAME_LEN - 1);
+    profile->user_Name[MAX_USER_NAME_LEN - 1] = '\0';  // Ensure null-termination
+    strncpy(profile->user_Email, email, MAX_USER_EMAIL_LEN - 1);
+    profile->user_Email[MAX_USER_EMAIL_LEN - 1] = '\0';
+    strncpy(profile->user_Profile_image_path, profile_image_path, MAX_PROFILE_IMAGE_PATH_LEN - 1);
+    profile->user_Profile_image_path[MAX_PROFILE_IMAGE_PATH_LEN - 1] = '\0';
+    strncpy(profile->user_Master_password_image_path, master_password_image_path, MAX_MASTER_IMAGE_PATH_LEN - 1);
+    profile->user_Master_password_image_path[MAX_MASTER_IMAGE_PATH_LEN - 1] = '\0';
 
-    printf("Profile created successfully with ID %s.\n", profile->user_ID); 
+    log_info("Profile created successfully with ID %s.", profile->user_ID); 
+    return SUCCESS;
 }
 
-void display_profile(Profile *profile){
+void display_profile(Profile *profile, int security_level) {
     if (!profile) {
-        printf("No profile data to display.\n");
+        log_error("No profile data to display.");
         return;
     }
 
+    printf("===============================\n");
     printf("Profile Details:\n");
+    printf("===============================\n");
     printf("User ID: %s\n", profile->user_ID);
     printf("Name: %s\n", profile->user_Name);
     printf("Email: %s\n", profile->user_Email);
-    printf("Profile Image Path: %s\n", profile->user_Profile_image_path);
-    printf("Master Password Image Path: %s\n", profile->user_Master_password_image_path);
+    
+    if (security_level > 1) {
+        printf("Profile Image Path: %s\n", profile->user_Profile_image_path);
+        printf("Master Password Image Path: %s\n", profile->user_Master_password_image_path);
+    }
 
     // For security reasons, we do not print the master password or the keys
     printf("Master Password: [SECURE]\n");
-    printf("Cryptographic Key from Password: [SECURE]\n");
-    printf("Cryptographic Key from Image: [SECURE]\n");
+    printf("Cryptographic Keys: [SECURE]\n");
+    printf("===============================\n");
+
+    log_info("Profile displayed for user %s", profile->user_ID);
 }
 
 void update_profile_info(Profile *profile, char *id, const char *name, const char *email, const char *profile_image_path) {
