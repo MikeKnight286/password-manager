@@ -22,8 +22,8 @@ typedef struct{
 /* PROFILE MANAGERMENT */
 int create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path);
 void display_profile(Profile *profile);
-void update_profile_info(Profile *profile, const char *name, const char *email, const char *profile_image_path);
-void delete_profile(Profile *profile);
+int update_profile_info(Profile *profile, const char *name, const char *email, const char *profile_image_path);
+int delete_profile(Profile *profile);
 
 /* PASSWORD AND MASTER IMAGE MANAGEMENT */
 void forgot_master_password(Profile *profile);
