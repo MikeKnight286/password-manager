@@ -12,6 +12,13 @@
 #define ERROR_INPUT_TOO_LONG 2
 #define ERROR_INVALID_INPUT 3
 #define ERROR_WEAK_PASSWORD 4
+#define UPDATE_SUCCESS 0
+#define UPDATE_ERROR_NULL_PARAMETER 1
+#define UPDATE_ERROR_ID_MISMATCH 2
+#define UPDATE_ERROR_INPUT_TOO_LONG 3
+#define UPDATE_ERROR_INVALID_INPUT 4
+#define DELETE_SUCCESS 0
+#define DELETE_ERROR_NULL_PROFILE 1
 
 /* PROFILE MANAGEMENT */
 int create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
@@ -96,52 +103,55 @@ void display_profile(Profile *profile, int security_level) {
     log_info("Profile displayed for user %s", profile->user_ID);
 }
 
-void update_profile_info(Profile *profile, char *id, const char *name, const char *email, const char *profile_image_path) {
-    // Error handling
+int update_profile_info(Profile *profile, const char *id, const char *name, const char *email, const char *profile_image_path) {
     if (!profile || !id || !name || !email || !profile_image_path) {
-        printf("Missing input parameters.\n");
-        return;
+        LOG_ERROR("Missing input parameters in update_profile_info.");
+        return UPDATE_ERROR_NULL_PARAMETER;
     }
 
-    // Check if the provided ID matches the profile's ID
-    if (strcmp(profile->user_ID, id) != 0) {
-        printf("Profile ID does not exist or does not match.\n");
-        return;
+    // Use constant-time comparison for the ID
+    if (sodium_memcmp(profile->user_ID, id, strlen(profile->user_ID)) != 0) {
+        LOG_ERROR("Profile ID does not match in update_profile_info.");
+        return UPDATE_ERROR_ID_MISMATCH;
     }
 
-    // Update the name, email, and profile image path
-    if (strlen(name) >= sizeof(profile->user_Name)) {
-        printf("Name too long.\n");
-        return;
+    if (strlen(name) >= MAX_USER_NAME_LEN || strlen(email) >= MAX_USER_EMAIL_LEN) {
+        LOG_ERROR("Name or email too long in update_profile_info.");
+        return UPDATE_ERROR_INPUT_TOO_LONG;
     }
 
-    if (strlen(email) >= sizeof(profile->user_Email)) {
-        printf("Email too long.\n");
-        return;
+    if (!isValidName(name) || !isValidEmail(email)) {
+        LOG_ERROR("Invalid name or email format in update_profile_info.");
+        return UPDATE_ERROR_INVALID_INPUT;
     }
 
-    strncpy(profile->user_Name, name, MAX_USER_NAME_LEN);
-    strncpy(profile->user_Email, email, MAX_USER_EMAIL_LEN);
-    strncpy(profile->user_Profile_image_path, profile_image_path, MAX_PROFILE_IMAGE_PATH_LEN);
+    strncpy(profile->user_Name, name, MAX_USER_NAME_LEN - 1);
+    profile->user_Name[MAX_USER_NAME_LEN - 1] = '\0';
+    strncpy(profile->user_Email, email, MAX_USER_EMAIL_LEN - 1);
+    profile->user_Email[MAX_USER_EMAIL_LEN - 1] = '\0';
+    strncpy(profile->user_Profile_image_path, profile_image_path, MAX_PROFILE_IMAGE_PATH_LEN - 1);
+    profile->user_Profile_image_path[MAX_PROFILE_IMAGE_PATH_LEN - 1] = '\0';
 
-    printf("Profile information updated successfully.\n");
+    LOG_INFO("Profile information updated successfully for ID: %s", id);
+    return UPDATE_SUCCESS;
 }
 
-void delete_profile(Profile *profile) {
+int delete_profile(Profile *profile) {
     if (!profile) {
-        printf("Profile does not exist.\n");
-        return;
+        LOG_ERROR("Attempt to delete non-existent profile.");
+        return DELETE_ERROR_NULL_PROFILE;
     }
 
-    // Clear the profile data
-    memset(profile->user_ID, 0, sizeof(profile->user_ID));
-    memset(profile->user_Name, 0, sizeof(profile->user_Name));
-    memset(profile->user_Email, 0, sizeof(profile->user_Email));
-    memset(profile->user_Master_password, 0, sizeof(profile->user_Master_password));
-    memset(profile->user_Profile_image_path, 0, sizeof(profile->user_Profile_image_path));
-    memset(profile->user_Master_password_image_path, 0, sizeof(profile->user_Master_password_image_path));
+    // Clear sensitive data using secure zeroing
+    sodium_memzero(profile->user_ID, sizeof(profile->user_ID));
+    sodium_memzero(profile->user_Name, sizeof(profile->user_Name));
+    sodium_memzero(profile->user_Email, sizeof(profile->user_Email));
+    sodium_memzero(profile->user_Master_password, sizeof(profile->user_Master_password));
+    sodium_memzero(profile->user_Profile_image_path, sizeof(profile->user_Profile_image_path));
+    sodium_memzero(profile->user_Master_password_image_path, sizeof(profile->user_Master_password_image_path));
 
-    printf("Profile deleted successfully.\n");
+    LOG_INFO("Profile deleted successfully.");
+    return DELETE_SUCCESS;
 }
 
 
