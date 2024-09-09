@@ -11,6 +11,8 @@
 #include "zxcvbn.h"
 #include <openssl/sha.h>
 #include <openssl/evp.h>
+#include <curl/curl.h>
+#include "logger.h"
 #include "utils.h"
 
 #define SINGLE_GUESS 0.010
@@ -911,4 +913,35 @@ void generate_random_password(const char *username, const char *domain, char *pa
             break;
         }
     }
+}
+
+// Structure to hold email data
+struct upload_status {
+    const char *data;
+    size_t bytes_read;
+};
+
+// Callback function for CURL to read the email body
+static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
+{
+    struct upload_status *upload_ctx = (struct upload_status *)userp;
+    const char *data;
+    size_t room = size * nmemb;
+
+    if ((size == 0) || (nmemb == 0) || ((size*nmemb) < 1)) {
+        return 0;
+    }
+
+    data = upload_ctx->data + upload_ctx->bytes_read;
+
+    if (data) {
+        size_t len = strlen(data);
+        if (room < len)
+            len = room;
+        memcpy(ptr, data, len);
+        upload_ctx->bytes_read += len;
+        return len;
+    }
+
+    return 0;
 }
