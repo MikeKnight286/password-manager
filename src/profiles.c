@@ -6,19 +6,7 @@
 #include "profiles.h"
 #include "utils.h"
 #include "logger.h"  
-
-#define SUCCESS 0
-#define ERROR_NULL_PARAMETER 1
-#define ERROR_INPUT_TOO_LONG 2
-#define ERROR_INVALID_INPUT 3
-#define ERROR_WEAK_PASSWORD 4
-#define UPDATE_SUCCESS 0
-#define UPDATE_ERROR_NULL_PARAMETER 1
-#define UPDATE_ERROR_ID_MISMATCH 2
-#define UPDATE_ERROR_INPUT_TOO_LONG 3
-#define UPDATE_ERROR_INVALID_INPUT 4
-#define DELETE_SUCCESS 0
-#define DELETE_ERROR_NULL_PROFILE 1
+#include "profile_errors.h"
 
 /* PROFILE MANAGEMENT */
 int create_profile(Profile *profile, char *id, const char *name, const char *email, const char*master_password, const char*profile_image_path, const char*master_password_image_path){
