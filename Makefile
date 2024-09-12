@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Iinclude -I/mingw64/include -I/mingw64/include/SDL2 -I/mingw64/include/sodium -Ilibs/zxcvbn-c
-LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -lcrypto
+CFLAGS = -Iinclude -I/mingw64/include -I/mingw64/include/SDL2 -I/mingw64/include/sodium -Ilibs/zxcvbn-c -I/mingw64/include/curl
+LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -lcrypto -lcurl
 TEST_LDFLAGS = -L/mingw64/lib -Llibs/zxcvbn-c -lpng -ljpeg -lz -lSDL2 -lSDL2_image -lsodium -lzxcvbn -lcrypto -Wl,--subsystem,console
 
 # List all source files
