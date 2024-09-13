@@ -945,3 +945,12 @@ static size_t payload_source(void *ptr, size_t size, size_t nmemb, void *userp)
 
     return 0;
 }
+
+int send_email(const char *to, const char *subject, const char *body){
+    CURL *curl;
+    CURLcode res = CURLE_OK;
+    struct curl_slist *recipients = NULL;
+    struct upload_status upload_ctx;
+
+    curl = curl_easy_init();
+}
